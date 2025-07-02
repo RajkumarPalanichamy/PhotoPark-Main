@@ -5,7 +5,7 @@ import axios from "axios";
 
 const AcrylicPortraitOrderpage = () => {
   const location = useLocation();
-  const { photoData } = location.state || {};
+  const { photoData, zoomLevel, position } = location.state || {};
 
   const [product, setProduct] = useState({
     title: "Portrait Acrylic Customize",
@@ -33,7 +33,6 @@ const AcrylicPortraitOrderpage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("Product State:", product); // 🧪
     window.scrollTo(0, 0);
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -100,15 +99,15 @@ const AcrylicPortraitOrderpage = () => {
         quantity,
         totalAmount: selectedSize.price * quantity,
         uploadedImageUrl: photoData?.url,
+        imageZoom: zoomLevel,
+        imagePosition: position,
       };
-     
-      // ✅ Include productId only if it exists
+
       if (photoData?.productId) {
         cartData.productId = photoData.productId;
       }
-      console.log("Cart Payload:", cartData);
-      await axios.post("http://localhost:5000/api/cart", cartData);
 
+      await axios.post("http://localhost:5000/api/cart", cartData);
       alert("✅ Item added to cart successfully!");
     } catch (error) {
       console.error("Add to cart failed", error);
@@ -136,15 +135,18 @@ const AcrylicPortraitOrderpage = () => {
             <p>Preview from Uploaded Design</p>
           </label>
           <div className="rounded-lg shadow-md overflow-hidden border border-gray-200">
-            <img
-              src={photoData?.url}
-              alt={photoData?.name || "Uploaded"}
-              className="w-full h-auto object-cover"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "/fallback.jpg";
-              }}
-            />
+            <div className="relative w-full aspect-[3/4] overflow-hidden">
+              <img
+                src={photoData?.url}
+                alt={photoData?.name || "Uploaded"}
+                className="absolute top-0 left-0 w-full h-full object-cover"
+                style={{
+                  transform: `translate(${position?.x || 0}px, ${
+                    position?.y || 0
+                  }px) scale(${zoomLevel || 1})`,
+                }}
+              />
+            </div>
           </div>
         </div>
 

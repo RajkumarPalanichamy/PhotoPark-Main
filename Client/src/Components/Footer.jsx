@@ -6,6 +6,8 @@ import {
   FaLinkedinIn,
 } from "react-icons/fa";
 
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-12 pb-6 px-6 mt-15">
@@ -24,24 +26,24 @@ const Footer = () => {
           <h3 className="text-lg font-semibold mb-3">Quick Links</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-white">
+              <Link to="/" className="hover:text-white">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white">
-                Shop
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
+              <Link to="/customize" className="hover:text-white">
                 Customize
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white">
+              <Link to="/frames" className="hover:text-white">
+                Customize Frames
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact" className="hover:text-white">
                 Contact
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -51,24 +53,24 @@ const Footer = () => {
           <h3 className="text-lg font-semibold mb-3">Customer Service</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-white">
-                FAQs
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
+              <Link to="/shipping-policy" className="hover:text-white">
                 Shipping & Returns
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white">
+              <Link to="/refund-policy" className="hover:text-white">
+                Refund & Cancellation Policy
+              </Link>
+            </li>
+            <li>
+              <Link to="/privacy-policy" className="hover:text-white">
                 Privacy Policy
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white">
+              <Link to="/terms-and-conditions" className="hover:text-white">
                 Terms & Conditions
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -76,8 +78,8 @@ const Footer = () => {
         {/* Contact Info */}
         <div>
           <h3 className="text-lg font-semibold mb-3">Get in Touch</h3>
-          <p className="text-sm">Email: support@photopark.com</p>
-          <p className="text-sm">Phone: +1 (800) 123-4567</p>
+          <p className="text-sm">Email: photoparkk.prints@gmail.com</p>
+          <p className="text-sm">Phone: +91 96296 74444</p>
           <div className="flex gap-4 mt-4">
             <a href="#" className="hover:text-white">
               <FaFacebookF />

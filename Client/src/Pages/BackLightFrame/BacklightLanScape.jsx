@@ -23,9 +23,7 @@ const BacklightLandscape = () => {
       const res = await axios.post(
         "http://localhost:5000/api/backlightcustomize/upload",
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       const imageUrl = res.data.imageUrl || res.data.uploadedImageUrl;
@@ -91,7 +89,7 @@ const BacklightLandscape = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6 w-full overflow-hidden">
       <input
         type="file"
         ref={fileInputRef}
@@ -103,8 +101,8 @@ const BacklightLandscape = () => {
       <div className="bg-white rounded-lg shadow-xl overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Upload Section */}
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl mt-7 font-semibold text-gray-800 mb-4">
               Your Backlight Frame Photo (Landscape)
             </h2>
             {!photoData ? (
@@ -159,13 +157,15 @@ const BacklightLandscape = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="relative aspect-square bg-gray-50 rounded-md overflow-hidden border border-gray-200">
+
+                <div className="relative w-full max-h-[400px] flex justify-center items-center bg-gray-50 rounded-md overflow-hidden border border-gray-200">
                   <img
                     src={photoData.url}
                     alt="Uploaded preview"
-                    className="w-full h-full object-contain"
+                    className="w-auto h-auto max-w-full max-h-[380px] object-contain"
                   />
                 </div>
+
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
@@ -179,9 +179,9 @@ const BacklightLandscape = () => {
             )}
           </div>
 
-          {/* Frame Preview (Landscape) */}
+          {/* Frame Preview */}
           <div
-            className={`flex-1 mt-8 md:mt-0 p-6 rounded-xl transition-colors ${
+            className={`flex-1 mt-8 md:mt-0 p-6 rounded-xl transition-colors min-w-0 ${
               lightOn ? "bg-black" : "bg-white"
             }`}
           >
@@ -207,13 +207,11 @@ const BacklightLandscape = () => {
               </button>
             </div>
 
-            {/* Light Switch */}
+            {/* Light toggle */}
             <div className="flex items-center gap-2 mb-4">
               <label
                 htmlFor="lightToggle"
-                className={`text-lg transition-colors ${
-                  lightOn ? "text-white" : "text-black"
-                }`}
+                className={`text-lg ${lightOn ? "text-white" : "text-black"}`}
               >
                 Click Light {lightOn ? "Off" : "On"}
               </label>
@@ -226,19 +224,17 @@ const BacklightLandscape = () => {
               />
             </div>
 
-            {/* Frame box */}
+            {/* Frame Container */}
             <div
-              className={`relative w-full max-w-[500px] aspect-[4/3] mx-auto rounded-xl overflow-hidden transition-shadow duration-300 ${
+              className={`relative w-full max-w-[400px] aspect-[4/3] mx-auto rounded-xl overflow-hidden transition-shadow duration-300 ${
                 lightOn
                   ? "border-[6px] border-yellow-300 shadow-[0_0_40px_10px_rgba(253,224,71,0.4)]"
                   : "border border-gray-300"
               }`}
             >
-              {/* Glowing layer behind image */}
               {lightOn && (
                 <div className="absolute inset-0 bg-yellow-300 opacity-20 blur-2xl z-0" />
               )}
-
               {photoData ? (
                 <img
                   src={photoData.url}

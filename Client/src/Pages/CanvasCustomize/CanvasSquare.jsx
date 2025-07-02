@@ -22,9 +22,7 @@ const CanvasSquare = () => {
       const res = await axios.post(
         "http://localhost:5000/api/canvascustomize/upload",
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       const imageUrl = res.data.imageUrl || res.data.uploadedImageUrl;
@@ -81,7 +79,6 @@ const CanvasSquare = () => {
       return;
     }
     navigate("/CanvasSquareOrderpage", { state: { photoData } });
-  
   };
 
   const formatFileSize = (bytes) => {
@@ -103,7 +100,7 @@ const CanvasSquare = () => {
       <div className="bg-white rounded-lg shadow-xl overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Upload Section */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
               Upload Your Photo (Square)
             </h2>
@@ -143,8 +140,8 @@ const CanvasSquare = () => {
                     <div className="bg-blue-100 p-1.5 rounded-md">
                       <Image className="w-5 h-5 text-blue-600" />
                     </div>
-                    <div className="ml-3 truncate">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                    <div className="ml-3 break-words max-w-[180px]">
+                      <p className="text-sm font-medium text-gray-900 break-words">
                         {photoData.name}
                       </p>
                       <p className="text-xs text-gray-500">
@@ -159,6 +156,7 @@ const CanvasSquare = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
+
                 <div className="relative aspect-square bg-gray-50 rounded-md overflow-hidden border border-gray-200">
                   <img
                     src={photoData.url}
@@ -166,6 +164,7 @@ const CanvasSquare = () => {
                     className="w-full h-full object-contain"
                   />
                 </div>
+
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
@@ -183,7 +182,7 @@ const CanvasSquare = () => {
           <div className="flex-1 mt-8 md:mt-0">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">
-               Canvas Preview (Square)
+                Canvas Preview (Square)
               </h2>
               <button
                 onClick={handlePreviewClick}
@@ -199,28 +198,24 @@ const CanvasSquare = () => {
               </button>
             </div>
 
-            <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 aspect-square relative">
-              <div className="absolute inset-[4px] sm:inset-[8px] bg-white flex items-center justify-center">
-                {photoData ? (
-                  <img
-                    src={photoData.url}
-                    alt="Framed"
-                    className="max-w-full max-h-full object-contain"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center p-6 text-center">
-                    <button
-                      onClick={handleReplaceClick}
-                      className="bg-blue-500 rounded-md text-white font-medium px-4 py-2 shadow-sm text-sm"
-                    >
-                      Select Photo
-                    </button>
-                    <p className="mt-4 text-gray-500">No photo selected</p>
-                  </div>
-                )}
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-white to-transparent opacity-20 pointer-events-none"></div>
-              <div className="absolute -bottom-4 -right-4 -left-4 h-8 bg-black opacity-5 blur-lg rounded-full"></div>
+            <div className="relative w-full max-w-[300px] aspect-square mx-auto rounded-xl border-5 border-black-300 shadow-inner bg-white overflow-hidden">
+              {photoData ? (
+                <img
+                  src={photoData.url}
+                  alt="Square Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-gray-500 text-center px-4">
+                  <p className="mb-2">No image selected</p>
+                  <button
+                    onClick={handleReplaceClick}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                  >
+                    Upload Photo
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

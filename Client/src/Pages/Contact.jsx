@@ -34,11 +34,11 @@ const Contact = () => {
             <div className="space-y-3 text-base md:text-lg">
               <p className="flex items-center gap-3">
                 <FaSquareEnvelope className="text-blue-600 text-xl" />
-                Photoparkk@gmail.com
+                photoparkk.prints@gmail.com
               </p>
               <p className="flex items-center gap-3">
                 <FaSquarePhone className="text-blue-600 text-xl" />
-                +91 9234334348
+                +91 96296 74444
               </p>
               <p className="flex items-center gap-3">
                 <FaSquareInstagram className="text-pink-500 text-xl" />

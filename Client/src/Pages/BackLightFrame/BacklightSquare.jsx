@@ -88,7 +88,7 @@ const BacklightSquare = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white">
+    <div className="max-w-6xl mx-auto p-6 w-full overflow-hidden">
       <input
         type="file"
         ref={fileInputRef}
@@ -97,11 +97,11 @@ const BacklightSquare = () => {
         className="hidden"
       />
 
-      <div className="rounded-lg shadow-xl overflow-hidden p-6 sm:p-8 bg-white">
+      <div className="bg-white rounded-lg shadow-xl overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Upload Section */}
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl mt-7 font-semibold text-gray-800 mb-4">
               Your Backlight Frame Photo (Square)
             </h2>
             {!photoData ? (
@@ -124,7 +124,7 @@ const BacklightSquare = () => {
                   </p>
                   <button
                     onClick={handleReplaceClick}
-                    className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm font-medium"
+                    className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
                   >
                     Browse Image
                   </button>
@@ -134,7 +134,7 @@ const BacklightSquare = () => {
                 </div>
               </div>
             ) : (
-              <div className="border rounded-lg p-4 bg-white">
+              <div className="border rounded-lg p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex items-center">
                     <div className="bg-blue-100 p-1.5 rounded-md">
@@ -156,13 +156,15 @@ const BacklightSquare = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="relative aspect-square bg-gray-50 rounded-md overflow-hidden border border-gray-200">
+
+                <div className="relative w-full aspect-square bg-gray-50 rounded-md overflow-hidden border border-gray-200">
                   <img
                     src={photoData.url}
                     alt="Uploaded preview"
-                    className="w-full h-full object-contain"
+                    className="w-auto h-auto max-w-full max-h-full object-contain mx-auto"
                   />
                 </div>
+
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
@@ -176,10 +178,9 @@ const BacklightSquare = () => {
             )}
           </div>
 
-          {/* Frame Preview Section */}
-
+          {/* Frame Preview */}
           <div
-            className={`flex-1 mt-8 md:mt-0 p-6 rounded-xl transition-colors ${
+            className={`flex-1 mt-8 md:mt-0 p-6 rounded-xl transition-colors min-w-0 ${
               lightOn ? "bg-black" : "bg-white"
             }`}
           >
@@ -205,13 +206,11 @@ const BacklightSquare = () => {
               </button>
             </div>
 
-            {/* Light Switch */}
+            {/* Light toggle */}
             <div className="flex items-center gap-2 mb-4">
               <label
                 htmlFor="lightToggle"
-                className={`text-lg transition-colors ${
-                  lightOn ? "text-white" : "text-black"
-                }`}
+                className={`text-lg ${lightOn ? "text-white" : "text-black"}`}
               >
                 Click Light {lightOn ? "Off" : "On"}
               </label>
@@ -224,27 +223,25 @@ const BacklightSquare = () => {
               />
             </div>
 
-            {/* Frame Preview Box */}
+            {/* Frame container */}
             <div
-              className={`relative aspect-square mx-auto rounded-xl overflow-hidden transition-all duration-300 ${
+              className={`relative w-full aspect-square max-w-[300px] mx-auto rounded-xl overflow-hidden transition-shadow duration-300 ${
                 lightOn
-                  ? "border-4 border-yellow-400 shadow-[0_0_40px_10px_rgba(255,255,0,0.5)]"
-                  : "border-4 border-gray-300 shadow-inner"
+                  ? "border-[6px] border-yellow-300 shadow-[0_0_40px_10px_rgba(253,224,71,0.4)]"
+                  : "border border-gray-300"
               }`}
             >
+              {lightOn && (
+                <div className="absolute inset-0 bg-yellow-300 opacity-20 blur-2xl z-0" />
+              )}
               {photoData ? (
-                <>
-                  {lightOn && (
-                    <div className="absolute inset-0 bg-yellow-300 opacity-20 blur-md z-0 pointer-events-none" />
-                  )}
-                  <img
-                    src={photoData.url}
-                    alt="Framed"
-                    className="relative z-10 w-full h-full object-cover"
-                  />
-                </>
+                <img
+                  src={photoData.url}
+                  alt="Square Preview"
+                  className="relative z-10 w-full h-full object-cover"
+                />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500 text-center px-4">
+                <div className="relative z-10 flex flex-col items-center justify-center h-full text-gray-500 text-center px-4">
                   <p className="mb-2">No image selected</p>
                   <button
                     onClick={handleReplaceClick}

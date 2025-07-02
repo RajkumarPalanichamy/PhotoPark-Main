@@ -23,10 +23,9 @@ const BacklightPortrait = () => {
       const res = await axios.post(
         "http://localhost:5000/api/backlightcustomize/upload",
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
+
       const imageUrl = res.data.imageUrl || res.data.uploadedImageUrl;
 
       setPhotoData({
@@ -90,7 +89,7 @@ const BacklightPortrait = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6 w-full overflow-hidden">
       <input
         type="file"
         ref={fileInputRef}
@@ -102,9 +101,9 @@ const BacklightPortrait = () => {
       <div className="bg-white rounded-lg shadow-xl overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Upload Section */}
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Your Backlight Frame Photo (Portrait)
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl mt-7 font-semibold text-gray-800 mb-4">
+              Upload Your Photo (Portrait)
             </h2>
             {!photoData ? (
               <div
@@ -158,13 +157,15 @@ const BacklightPortrait = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="relative aspect-square bg-gray-50 rounded-md overflow-hidden border border-gray-200">
+
+                <div className="relative w-full max-h-[400px] flex justify-center items-center bg-gray-50 rounded-md overflow-hidden border border-gray-200">
                   <img
                     src={photoData.url}
                     alt="Uploaded preview"
-                    className="w-full h-full object-contain"
+                    className="w-auto h-auto max-w-full max-h-[380px] object-contain"
                   />
                 </div>
+
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
@@ -180,7 +181,7 @@ const BacklightPortrait = () => {
 
           {/* Frame Preview */}
           <div
-            className={`flex-1 mt-8 md:mt-0 p-6 rounded-xl transition-colors ${
+            className={`flex-1 mt-8 md:mt-0 p-6 rounded-xl transition-colors min-w-0 ${
               lightOn ? "bg-black" : "bg-white"
             }`}
           >
@@ -206,17 +207,14 @@ const BacklightPortrait = () => {
               </button>
             </div>
 
-            {/* Toggle */}
+            {/* Light toggle */}
             <div className="flex items-center gap-2 mb-4">
               <label
                 htmlFor="lightToggle"
-                className={`text-lg transition-colors ${
-                  lightOn ? "text-white" : "text-black"
-                }`}
+                className={`text-lg ${lightOn ? "text-white" : "text-black"}`}
               >
                 Click Light {lightOn ? "Off" : "On"}
               </label>
-
               <input
                 id="lightToggle"
                 type="checkbox"
@@ -234,7 +232,6 @@ const BacklightPortrait = () => {
                   : "border border-gray-300"
               }`}
             >
-              {/* Light effect behind image */}
               {lightOn && (
                 <div className="absolute inset-0 bg-yellow-300 opacity-20 blur-2xl z-0" />
               )}

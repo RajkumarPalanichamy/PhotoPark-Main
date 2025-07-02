@@ -80,8 +80,8 @@ const CanvasPortrait = () => {
       return;
     }
     navigate("/CanvasPortraitOrder", { state: { photoData } });
-  
   };
+
   const formatFileSize = (bytes) => {
     if (bytes < 1024) return bytes + " bytes";
     else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
@@ -89,7 +89,7 @@ const CanvasPortrait = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="max-w-5xl mx-auto p-6 overflow-x-hidden">
       <input
         type="file"
         ref={fileInputRef}
@@ -101,9 +101,9 @@ const CanvasPortrait = () => {
       <div className="bg-white rounded-lg shadow-xl overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Upload Section */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Upload Your Photo (Square)
+              Upload Your Photo (Portrait)
             </h2>
             {!photoData ? (
               <div
@@ -141,8 +141,8 @@ const CanvasPortrait = () => {
                     <div className="bg-blue-100 p-1.5 rounded-md">
                       <Image className="w-5 h-5 text-blue-600" />
                     </div>
-                    <div className="ml-3 truncate">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                    <div className="ml-3 break-words max-w-[180px]">
+                      <p className="text-sm font-medium text-gray-900 break-words">
                         {photoData.name}
                       </p>
                       <p className="text-xs text-gray-500">
@@ -157,13 +157,15 @@ const CanvasPortrait = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="relative aspect-square bg-gray-50 rounded-md overflow-hidden border border-gray-200">
+
+                <div className="relative w-full max-h-[400px] flex justify-center items-center bg-gray-50 rounded-md overflow-hidden border border-gray-200">
                   <img
                     src={photoData.url}
                     alt="Uploaded preview"
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-[380px] object-contain"
                   />
                 </div>
+
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
@@ -178,11 +180,10 @@ const CanvasPortrait = () => {
           </div>
 
           {/* Frame Preview */}
-          {/* Frame Preview (Portrait Shape) */}
-          <div className="flex-1 mt-8 md:mt-0">
+          <div className="flex-1 min-w-0 mt-8 md:mt-0">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">
-                Canvas Preview (Square)
+                Canvas Preview (Portrait)
               </h2>
               <button
                 onClick={handlePreviewClick}
@@ -198,8 +199,7 @@ const CanvasPortrait = () => {
               </button>
             </div>
 
-            {/* Portrait Frame */}
-            <div className="relative w-full max-w-[300px] aspect-[3/4] mx-auto rounded-xl border-15 border-gray-300 shadow-inner bg-white overflow-hidden">
+            <div className="relative w-full max-w-[300px] aspect-[3/4] mx-auto rounded-xl border-5 border-black-300 shadow-inner bg-white overflow-hidden">
               {photoData ? (
                 <img
                   src={photoData.url}

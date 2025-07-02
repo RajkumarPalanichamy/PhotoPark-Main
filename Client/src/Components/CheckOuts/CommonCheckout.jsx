@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 
 const CommonCheckout = () => {
   const { id: cartItemId } = useParams();
+  const navigate = useNavigate(); // ✅ Initialize navigate
   console.log("🟡 Checkout param ID:", cartItemId);
 
   const [cartItem, setCartItem] = useState(null);
@@ -64,7 +65,7 @@ const CommonCheckout = () => {
       );
 
       alert("✅ Order placed successfully!");
-      // navigate("/thankyou"); // Optional redirect
+      navigate("/my-orders"); // ✅ Navigate to My Orders page
     } catch (err) {
       console.error("❌ Order failed:", err);
       alert("Failed to place order");

@@ -104,7 +104,7 @@ const CanvasLandscape = () => {
       <div className="bg-white rounded-lg shadow-xl overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Upload Section */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
               Upload Your Photo (Landscape)
             </h2>
@@ -144,8 +144,8 @@ const CanvasLandscape = () => {
                     <div className="bg-blue-100 p-1.5 rounded-md">
                       <Image className="w-5 h-5 text-blue-600" />
                     </div>
-                    <div className="ml-3 truncate">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                    <div className="ml-3 break-words max-w-[180px]">
+                      <p className="text-sm font-medium text-gray-900 break-words">
                         {photoData.name}
                       </p>
                       <p className="text-xs text-gray-500">
@@ -160,13 +160,15 @@ const CanvasLandscape = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="relative aspect-square bg-gray-50 rounded-md overflow-hidden border border-gray-200">
+
+                <div className="relative w-full max-h-[400px] flex justify-center items-center bg-gray-50 rounded-md overflow-hidden border border-gray-200">
                   <img
                     src={photoData.url}
                     alt="Uploaded preview"
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-[380px] object-contain"
                   />
                 </div>
+
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
@@ -200,8 +202,7 @@ const CanvasLandscape = () => {
               </button>
             </div>
 
-            {/* Landscape Frame Box */}
-            <div className="relative w-full max-w-[500px] aspect-[4/3] mx-auto rounded-xl border-4 border-gray-300 shadow-inner bg-white overflow-hidden">
+            <div className="relative w-full max-w-[500px] aspect-[4/3] mx-auto rounded-xl border-5 border-black-300 shadow-inner bg-white overflow-hidden">
               {photoData ? (
                 <img
                   src={photoData.url}

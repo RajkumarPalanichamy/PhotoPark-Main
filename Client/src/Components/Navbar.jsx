@@ -150,6 +150,7 @@ const Navbar = () => {
           <li className="group">
             <StyledNavLink to="/contact">CONTACT</StyledNavLink>
           </li>
+
           {isAdmin && (
             <li className="group">
               <StyledNavLink to="/adminpanel">ADMIN PANEL</StyledNavLink>

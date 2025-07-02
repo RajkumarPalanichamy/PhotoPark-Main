@@ -10,6 +10,10 @@ import Login from "./Pages/Login";
 import Profile from "./Pages/Profile";
 import Offers from "./Components/HomePageComponents/Offers"
 import SpecialOffers from "./Components/HomePageComponents/SpecialOffers";
+import PrivacyPolicy from "./Pages/PrivacyPolicy";
+import TermsAndConditions from "./Pages/TermsAndConditions";
+import RefundAndCancellationPolicy from "./Pages/RefundAndCancellationPolicy";
+import ShippingPolicy from "./Pages/ShippingPolicy";
 
 
 //--------------PrivateRoute and AdminRoute-------
@@ -104,11 +108,19 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
             <Route path="/frames" element={<Frames />} />
-            
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
+            <Route
+              path="/refund-policy"
+              element={<RefundAndCancellationPolicy />}
+            />
+            <Route path="/shipping-policy" element={<ShippingPolicy />} />
 
             {/* Cart Route Protection */}
             <Route path="/cart" element={<Cart />} />
-
             {/* Profile Route Protection */}
             <Route
               path="/profile"
@@ -118,15 +130,11 @@ function App() {
                 </PrivateRoute>
               }
             />
-
             {/* HomePage Special Offers */}
             <Route path="/Offers" element={<Offers />} />
             <Route path="/specialoffers" element={<SpecialOffers />} />
-
             {/* ----------------------------------------------------This is Checkout Before OrderaPage Not a Final OrderPage---------------------------------------------------------------- */}
-
             {/*OrderPage*/}
-
             {/*NewArrivals OrderPage*/}
             <Route
               path="/newarrivalorderpage/:id"
@@ -137,7 +145,6 @@ function App() {
               path="/specialoffersorderpage/:id"
               element={<SpecialOffersOrderPage />}
             />
-
             {/* Acrylic OrderPages */}
             <Route
               path="/AcrylicPortraitOrder"
@@ -147,12 +154,10 @@ function App() {
               path="/AcrylicLandscapeOrder"
               element={<AcrylicLandscapeOrderpage />}
             />
-
             <Route
               path="/AcrylicSquareOrder"
               element={<AcrylicSquareOrderpage />}
             />
-
             <Route
               path="/AcrylicLoveOrder"
               element={<AcrylicLoveOrderPage />}
@@ -165,7 +170,6 @@ function App() {
               path="/AcrylicRoundOrder"
               element={<AcrylicRoundOrderPage />}
             />
-
             {/* Canvas OrderPages */}
             <Route
               path="/CanvasPortraitOrder"
@@ -179,37 +183,27 @@ function App() {
               path="/CanvasSquareOrderpage"
               element={<CanvasSquareOrderpage />}
             />
-
             {/* Backlight OrderPages */}
             <Route
               path="/BacklightPortraitOrderpage"
               element={<BacklightPortraitOrderpage />}
             />
-
             <Route
               path="/BacklightlanScapeOrderpage"
               element={<BacklightlanScapeOrderpage />}
             />
-
             <Route
               path="/BacklightSquareOrderpage"
               element={<BacklightSquareOrderpage />}
             />
-
             {/* -----------------------------------------------------Checkouts--------------------------------------------------------------- */}
-
             {/* CheckOuts */}
-
             {/* Common Checkouts */}
             <Route path="/checkout/:id" element={<CommonCheckout />} />
-
             {/* FramesCheckouts */}
             <Route path="/frameCheckout" element={<FramesCheckout />} />
-
             {/* --------------------------------------------------Customization------------------------------------------------------------------ */}
-
             {/* Customization */}
-
             {/* {AcrylicCustomize} */}
             <Route path="/AcrylicPortrait" element={<AcrylicPortrait />} />
             <Route path="/AcrylicLandscape" element={<AcrylicLandscape />} />
@@ -217,19 +211,15 @@ function App() {
             <Route path="/AcrylicLove" element={<AcrylicLove />} />
             <Route path="/AcrylicHexagon" element={<AcrylicHexagon />} />
             <Route path="/AcrylicRound" element={<AcrylicRound />} />
-
             {/* Canvas Customize */}
             <Route path="/CanvasPortrait" element={<CanvasPortrait />} />
             <Route path="/CanvasLandScape" element={<CanvasLandScape />} />
             <Route path="/CanvasSquare" element={<CanvasSquare />} />
-
             {/* Backlight Customize */}
             <Route path="/BacklightPortrait" element={<BacklightPortrait />} />
             <Route path="/BacklightlanScape" element={<BacklightlanScape />} />
             <Route path="/BacklightSquare" element={<BacklightSquare />} />
-
             {/* ---------------------------------------------------NavbarShop-Page---------------------------------------------------------------- */}
-
             {/* Navbar {ShopPage routes} */}
             <Route path="/shop/acrylic" element={<Acrylic />} />
             <Route path="/shop/canvas" element={<Canvas />} />
@@ -237,13 +227,9 @@ function App() {
               path="/shop/backlight-frames"
               element={<BacklightFrames />}
             />
-
             {/* ------------------------------------------------AdminPage---------------------------------------------------------------------*/}
-
             {/* AdminPage*/}
-
             {/*AdminPanel Dashboard Route*/}
-
             {/* AdminPanel Page Protection */}
             <Route
               path="/adminpanel"
@@ -253,23 +239,19 @@ function App() {
                 </AdminRoute>
               }
             />
-
             <Route path="/adminorderPage" element={<AdminOrderPage />} />
             <Route path="/adminproducts" element={<AdminProducts />} />
             <Route
               path="/monthlyrevenue"
               element={<MonthlyRevenueDashboard />}
             />
-
             {/*AdminPanel Products Edited,Imported Route*/}
-
             {/*NewArrivals Products AddForm, UpdateForm*/}
             <Route path="/newarrivaladdform" element={<NewArrivalAddForm />} />
             <Route
               path="/newarrivalupdateform/:id"
               element={<NewarrivalUpdateForm />}
             />
-
             {/*SpecialOffers Products AddForm,UpdateForm*/}
             <Route
               path="/specialoffersaddform"
@@ -279,27 +261,19 @@ function App() {
               path="/specialoffersupdateform/:id"
               element={<SpecialOffersUpdateForm />}
             />
-
             {/* -----------------Frames------------ */}
-
             <Route
               path="/framecustomizeadmin"
               element={<FrameCustomizeAdmin />}
             />
-
             {/* --------------------------------UserOrderPage--------------------------------*/}
-
             <Route path="/my-orders" element={<UserOrderPage />} />
-
             {/* -------------------------------AdminPanelOrders------------------------------*/}
-
             {/* FrameOrders */}
-
-            <Route path="/frameorder" element={<FramesOrder/>} />
-            <Route path="/CommonOrder" element={<CommonOrder/>} />
-
+            <Route path="/frameorder" element={<FramesOrder />} />
+            <Route path="/CommonOrder" element={<CommonOrder />} />
           </Routes>
-          <Footer/>
+          <Footer />
         </BrowserRouter>
       </div>
     </>
