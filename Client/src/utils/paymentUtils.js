@@ -62,14 +62,21 @@ export const initializePayment = async (orderData, userDetails) => {
 
           // ✅ Step 2: Save frame order in DB before redirect
           const orderPayload = orderData.orderPayload;
-          await axiosInstance
-            .post('/frameorders/create', orderPayload)
-            .then((res) => {
-              console.log('✅ Frame order saved successfully:', res.data);
-            })
-            .catch((err) => {
-              console.error('❌ Error saving frame order:', err.response?.data || err.message);
-            });
+          if (orderPayload) {
+            // Add payment details to the frame order
+            orderPayload.paymentId = response.razorpay_payment_id;
+            orderPayload.paymentStatus = 'success';
+            orderPayload.paidAt = new Date();
+            
+            await axiosInstance
+              .post('/frameorders/create', orderPayload)
+              .then((res) => {
+                console.log('✅ Frame order saved successfully:', res.data);
+              })
+              .catch((err) => {
+                console.error('❌ Error saving frame order:', err.response?.data || err.message);
+              });
+          }
 
           // ✅ Step 3: Redirect to success page
           const successUrl = `/payment-success?razorpay_payment_id=${response.razorpay_payment_id}&razorpay_order_id=${response.razorpay_order_id}`;

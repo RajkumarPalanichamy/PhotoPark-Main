@@ -36,28 +36,32 @@ router.post("/create-order", protect, async (req, res) => {
 
     const razorpayOrder = await razorpay.orders.create(options);
 
-    // Create order in database with pending status
-    const orderData = {
-      userId,
-      productType,
-      deliveryDetails,
-      status: "pending",
-      paymentId: razorpayOrder.id,
-      amount: amount,
-    };
-    
-    // Only add cartItemId if it exists (for non-frame orders)
-    if (cartItemId) {
-      orderData.cartItemId = cartItemId;
+    // Only create order in database for non-frame orders
+    let dbOrderId = null;
+    if (productType !== "frame") {
+      const orderData = {
+        userId,
+        productType,
+        deliveryDetails,
+        status: "pending",
+        paymentId: razorpayOrder.id,
+        amount: amount,
+      };
+      
+      // Only add cartItemId if it exists
+      if (cartItemId) {
+        orderData.cartItemId = cartItemId;
+      }
+      
+      const newOrder = await Order.create(orderData);
+      dbOrderId = newOrder._id;
     }
-    
-    const newOrder = await Order.create(orderData);
 
     res.json({
       orderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
-      dbOrderId: newOrder._id,
+      dbOrderId: dbOrderId,
     });
   } catch (error) {
     console.error("❌ Payment order creation failed:", error);
@@ -85,7 +89,7 @@ router.post("/verify", protect, async (req, res) => {
       return res.status(400).json({ error: "Invalid payment signature" });
     }
 
-    // Update order status to completed
+    // Only update order status for non-frame orders
     if (dbOrderId) {
       await Order.findByIdAndUpdate(dbOrderId, {
         status: "completed",
