@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 import {
   createPaymentOrder,
   initializePayment,
@@ -106,14 +106,6 @@ const Framescheckout = () => {
         },
       };
 
-      const orderData = await createPaymentOrder(paymentData);
-      await initializePayment(orderData, {
-        name: fullName,
-        email,
-        phone: `+91${phone}`,
-        address,
-      });
-
       const orderPayload = {
         userId,
         shippingDetails: {
@@ -138,13 +130,21 @@ const Framescheckout = () => {
         status: "Pending",
       };
 
-      console.log("📝 Saving order to backend:", orderPayload);
+      console.log("📝 Creating payment with order:", orderPayload);
 
-      await axios.post(
-        "http://localhost:5000/api/frameorders/create",
-        orderPayload
-      );
+      const orderData = await createPaymentOrder(paymentData);
+      
+      // Pass orderPayload to initializePayment
+      orderData.orderPayload = orderPayload;
+      
+      await initializePayment(orderData, {
+        name: fullName,
+        email,
+        phone: `+91${phone}`,
+        address,
+      });
 
+      // Order will be created in payment success handler
       alert("✅ Payment successful! Your frame order has been placed.");
       sessionStorage.removeItem("checkoutFrameData");
       setFullName("");

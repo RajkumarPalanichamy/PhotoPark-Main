@@ -1,18 +1,22 @@
 // routes/framesorder.js
 import express from "express";
 import FrameOrder from "../models/framesorder.js";
+import { protect } from "../Middleware/authmiddleware.js";
 
 const router = express.Router();
 
 // ✅ Create Order (User Checkout)
-router.post("/create", async (req, res) => {
+router.post("/create", protect, async (req, res) => {
   console.log("📥 POST /api/frameorders/create called"); 
-  console.log("📦 Request body:", req.body); // <- ADD THIS
+  console.log("📦 Request body:", req.body);
+  console.log("🔐 Auth headers:", req.headers.authorization);
   try {
-    const { userId, items, shippingDetails } = req.body;
+    // Get userId from authenticated user
+    const userId = req.user._id;
+    const { items, shippingDetails } = req.body;
 
     // Basic validation
-    if (!userId || !items?.length || !shippingDetails?.fullName) {
+    if (!items?.length || !shippingDetails?.fullName) {
       return res.status(400).json({ success: false, message: "Missing fields" });
     }
 
