@@ -1,12 +1,6 @@
 import multer from "multer";
-import path from "path";
-import { __dirname } from "../utils/dirnameHelper.js";
 
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../specialoffersUploads"),
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+// Store files in memory (needed for buffer upload to Cloudinary)
+const storage = multer.memoryStorage();
 
 export const upload = multer({ storage });

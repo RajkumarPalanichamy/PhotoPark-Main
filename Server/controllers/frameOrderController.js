@@ -1,11 +1,8 @@
 import FrameOrder from "../models/framesorder.js";
+import { v2 as cloudinary } from "cloudinary";
 
 // ✅ Create a new frame order
 export const createFrameOrder = async (req, res) => {
-  console.log("📥 POST /api/frameorders/create called");
-  console.log("📦 Request body:", req.body);
-  console.log("🔐 Auth headers:", req.headers.authorization);
-
   try {
     const userId = req.user._id;
     const { items, shippingDetails } = req.body;
@@ -13,6 +10,8 @@ export const createFrameOrder = async (req, res) => {
     if (!items?.length || !shippingDetails?.fullName) {
       return res.status(400).json({ success: false, message: "Missing fields" });
     }
+
+    const uploadedItems = [];
 
     for (const item of items) {
       if (
@@ -29,30 +28,38 @@ export const createFrameOrder = async (req, res) => {
           item,
         });
       }
-    }
 
-    const sanitizedItems = items.map((item) => ({
-      title: item.title,
-      frameImageUrl: item.frameImageUrl,
-      userImageUrl: item.userImageUrl,
-      shape: item.shape,
-      color: item.color,
-      size: item.size,
-      price: Number(item.price),
-      quantity: Number(item.quantity),
-      total: Number(item.total),
-    }));
+      // Upload frame and user image to Cloudinary
+      const [frameUpload, userUpload] = await Promise.all([
+        cloudinary.uploader.upload(item.frameImageUrl, {
+          folder: "frames/frame_images",
+        }),
+        cloudinary.uploader.upload(item.userImageUrl, {
+          folder: "frames/user_images",
+        }),
+      ]);
+
+      uploadedItems.push({
+        title: item.title,
+        shape: item.shape,
+        color: item.color,
+        size: item.size,
+        price: Number(item.price),
+        quantity: Number(item.quantity),
+        total: Number(item.total),
+        frameImageUrl: frameUpload.secure_url,
+        userImageUrl: userUpload.secure_url,
+      });
+    }
 
     const newOrder = new FrameOrder({
       userId,
-      items: sanitizedItems,
+      items: uploadedItems,
       shippingDetails,
       status: "Pending",
     });
 
     await newOrder.save();
-    console.log("✅ Order saved successfully");
-    console.log("🛒 Saved Order Details:", newOrder);
 
     res.status(201).json({
       success: true,

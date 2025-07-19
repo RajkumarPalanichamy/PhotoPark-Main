@@ -1,7 +1,7 @@
 import FrameCustomize from "../models/framescustomize.js";
-import fs from "fs";
+import cloudinary from "../config/cloudinary.js";
 
-// ✅ Create new FrameCustomize
+// ✅ Create new FrameCustomize with Cloudinary upload
 export const createFrameCustomize = async (req, res) => {
   try {
     const {
@@ -17,18 +17,29 @@ export const createFrameCustomize = async (req, res) => {
       return res.status(400).json({ message: "userUploadedImage is required" });
     }
 
-    const newFrame = new FrameCustomize({
-      shapeData: JSON.parse(shapeData),
-      selectedShape,
-      selectedColor,
-      selectedFrameImage,
-      selectedSize,
-      quantity,
-      userUploadedImage: req.file.path,
-    });
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: "framescustomize" },
+      async (error, cloudinaryResult) => {
+        if (error) return res.status(500).json({ message: error.message });
 
-    const saved = await newFrame.save();
-    res.status(201).json(saved);
+        const newFrame = new FrameCustomize({
+          shapeData: JSON.parse(shapeData),
+          selectedShape,
+          selectedColor,
+          selectedFrameImage,
+          selectedSize,
+          quantity,
+          userUploadedImage: cloudinaryResult.secure_url,
+        });
+
+        const saved = await newFrame.save();
+        res.status(201).json(saved);
+      }
+    );
+
+    // pipe memory buffer to upload_stream
+    result.end(req.file.buffer);
   } catch (err) {
     console.error("POST Error:", err);
     res.status(500).json({ message: err.message });
@@ -36,15 +47,25 @@ export const createFrameCustomize = async (req, res) => {
 };
 
 // ✅ Upload a frame image (used in admin form)
-export const uploadFrameImage = (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
+export const uploadFrameImage = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
-  return res.json({ url: req.file.path });
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: "framescustomize/frames" },
+      (error, cloudinaryResult) => {
+        if (error) return res.status(500).json({ message: error.message });
+        return res.json({ url: cloudinaryResult.secure_url });
+      }
+    );
+
+    result.end(req.file.buffer);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
-// ✅ Get all entries
+// ✅ Get all
 export const getAllFrames = async (req, res) => {
   try {
     const data = await FrameCustomize.find().sort({ createdAt: -1 });
@@ -65,7 +86,7 @@ export const getFrameById = async (req, res) => {
   }
 };
 
-// ✅ Update by ID
+// ✅ Update
 export const updateFrameById = async (req, res) => {
   try {
     const {
@@ -84,7 +105,22 @@ export const updateFrameById = async (req, res) => {
     if (selectedFrameImage) updates.selectedFrameImage = selectedFrameImage;
     if (selectedSize) updates.selectedSize = selectedSize;
     if (quantity) updates.quantity = quantity;
-    if (req.file) updates.userUploadedImage = req.file.path;
+
+    // if new image provided, upload to Cloudinary
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "framescustomize" },
+          (error, cloudinaryResult) => {
+            if (error) reject(error);
+            else resolve(cloudinaryResult);
+          }
+        );
+        uploadStream.end(req.file.buffer);
+      });
+
+      updates.userUploadedImage = result.secure_url;
+    }
 
     const updated = await FrameCustomize.findByIdAndUpdate(req.params.id, updates, {
       new: true,
@@ -100,17 +136,11 @@ export const updateFrameById = async (req, res) => {
   }
 };
 
-// ✅ Delete by ID
+// ✅ Delete
 export const deleteFrameById = async (req, res) => {
   try {
     const item = await FrameCustomize.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ message: "Item not found" });
-
-    if (item.userUploadedImage && fs.existsSync(item.userUploadedImage)) {
-      fs.unlink(item.userUploadedImage, (err) => {
-        if (err) console.warn("Failed to delete image:", err.message);
-      });
-    }
 
     res.json({ message: "Deleted successfully" });
   } catch (err) {

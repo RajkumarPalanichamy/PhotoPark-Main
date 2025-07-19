@@ -1,4 +1,5 @@
 import Newarrivaldata from "../models/newarrivals.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export const createNewArrival = async (req, res) => {
   try {
@@ -24,9 +25,14 @@ export const createNewArrival = async (req, res) => {
       return res.status(400).json({ message: "Invalid numeric input in rating" });
     }
 
-    const image = req.file
-      ? `${req.protocol}://${req.get("host")}/newarrivalsUploads/${req.file.filename}`
-      : null;
+    // ✅ Upload to Cloudinary
+    let imageUrl = null;
+    if (req.file?.path) {
+      const cloudUpload = await cloudinary.uploader.upload(req.file.path, {
+        folder: "new_arrivals",
+      });
+      imageUrl = cloudUpload.secure_url;
+    }
 
     const posting = new Newarrivaldata({
       title,
@@ -35,7 +41,7 @@ export const createNewArrival = async (req, res) => {
       thickness,
       sizes: parsedSizes,
       stock,
-      image,
+      image: imageUrl,
       quantity,
     });
 
@@ -103,8 +109,11 @@ export const updateNewArrival = async (req, res) => {
       });
     }
 
-    if (req.file) {
-      post.image = `${req.protocol}://${req.get("host")}/newarrivalsUploads/${req.file.filename}`;
+    if (req.file?.path) {
+      const cloudUpload = await cloudinary.uploader.upload(req.file.path, {
+        folder: "new_arrivals",
+      });
+      post.image = cloudUpload.secure_url;
     }
 
     const updated = await post.save();

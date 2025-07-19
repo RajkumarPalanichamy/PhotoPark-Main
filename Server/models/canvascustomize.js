@@ -14,9 +14,10 @@ const canvascustomize = new mongoose.Schema({
   thickness: { type: String, required: true },
   sizes: { type: [SizeSchema], required: true },
   stock: { type: String },
-  quantity:{type:Number}
+  quantity: { type: Number },
+  shape: { type: String },
 });
 
-const Canvascustomizedata = mongoose.model("Canvascustomizedata",canvascustomize);
+const Canvascustomizedata = mongoose.model("Canvascustomizedata", canvascustomize);
 
 export default Canvascustomizedata;

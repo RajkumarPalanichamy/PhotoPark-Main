@@ -1,8 +1,10 @@
 import Order from "../models/orders.js";
+import { uploadToCloudinary } from "../config/cloudinary.js";
 
+// ✅ Create Order with Cloudinary image upload
 export const createOrder = async (req, res) => {
   try {
-    const { cartItemId, productType, deliveryDetails } = req.body;
+    const { cartItemId, productType, deliveryDetails, amount } = req.body;
     const userId = req.user._id;
 
     const allowedTypes = ["acrylic", "canvas", "backlight", "square", "circle"];
@@ -10,11 +12,19 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ error: "❌ Invalid productType" });
     }
 
+    let imageUrl = null;
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, "orders");
+      imageUrl = result.secure_url;
+    }
+
     const newOrder = await Order.create({
       userId,
       cartItemId,
       productType,
       deliveryDetails,
+      amount,
+      image: imageUrl,
     });
 
     res.status(201).json(newOrder);
@@ -24,6 +34,7 @@ export const createOrder = async (req, res) => {
   }
 };
 
+// ✅ Get all orders (Admin)
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -35,6 +46,7 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
+// ✅ Get user-specific orders
 export const getUserOrders = async (req, res) => {
   try {
     const orders = await Order.find({ userId: req.params.userId })
@@ -46,9 +58,11 @@ export const getUserOrders = async (req, res) => {
   }
 };
 
+// ✅ Update order status
 export const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
+
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
       { status },

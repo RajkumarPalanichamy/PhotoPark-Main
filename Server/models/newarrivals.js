@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const SizeSchema = new mongoose.Schema({
@@ -15,9 +14,8 @@ const newArrivalSchema = new mongoose.Schema({
   thickness: { type: String, required: true },
   sizes: { type: [SizeSchema], required: true },
   stock: { type: String },
-  quantity:{type:Number}
+  quantity: { type: Number },
 });
 
-const Newarrivaldata = mongoose.model("Newarrivaldata",newArrivalSchema );
-
+const Newarrivaldata = mongoose.model("Newarrivaldata", newArrivalSchema);
 export default Newarrivaldata;

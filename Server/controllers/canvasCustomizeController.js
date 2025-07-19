@@ -1,5 +1,5 @@
 import Canvascustomizedata from "../models/canvascustomize.js";
-import path from "path";
+import cloudinary from "../config/cloudinary.js";
 
 // Allowed shape values
 const ALLOWED_SHAPES = ["Portrait", "Landscape", "Square"];
@@ -13,30 +13,34 @@ export const createCanvas = async (req, res) => {
     }
 
     if (typeof sizes === "string") {
-      try {
-        sizes = JSON.parse(sizes);
-      } catch {
-        return res.status(400).json({ message: "Invalid sizes format" });
-      }
+      sizes = JSON.parse(sizes);
     }
 
-    const parsedSizes = sizes.map(size => {
-      const price = Number(size.price);
-      const original = Number(size.original);
-      if (isNaN(price) || isNaN(original)) {
-        throw new Error("Invalid numeric input in sizes");
-      }
-      return { label: size.label, price, original };
-    });
+    const parsedSizes = sizes.map(size => ({
+      label: size.label,
+      price: Number(size.price),
+      original: Number(size.original),
+    }));
 
     const parsedRating = Number(rating);
-    if (isNaN(parsedRating)) {
-      return res.status(400).json({ message: "Invalid numeric input in rating" });
-    }
 
-    const uploadedImageUrl = req.file
-      ? `${req.protocol}://${req.get("host")}/canvascustomizeUploads/${req.file.filename}`
-      : null;
+    let imageUrl = null;
+    if (req.file) {
+      const uploadRes = await cloudinary.uploader.upload_stream(
+        { resource_type: "image", folder: "canvasCustomize" },
+        (error, result) => {
+          if (error) throw new Error("Cloudinary upload failed");
+          return result?.secure_url;
+        }
+      );
+
+      const stream = cloudinary.uploader.upload_stream({ folder: "canvasCustomize" }, (err, result) => {
+        if (err) throw err;
+        imageUrl = result.secure_url;
+      });
+
+      stream.end(req.file.buffer);
+    }
 
     const newCanvas = new Canvascustomizedata({
       title,
@@ -45,26 +49,25 @@ export const createCanvas = async (req, res) => {
       thickness,
       sizes: parsedSizes,
       stock,
-      uploadedImageUrl,
       quantity,
       shape,
+      image: imageUrl,
     });
 
     const saved = await newCanvas.save();
-    return res.status(201).json(saved);
-
+    res.status(201).json(saved);
   } catch (error) {
-    console.error("Canvas Customize POST error:", error.message);
-    return res.status(400).json({ message: error.message || "Something went wrong" });
+    console.error("Canvas Create Error:", error);
+    res.status(400).json({ message: error.message || "Something went wrong" });
   }
 };
 
 export const getAllCanvas = async (req, res) => {
   try {
     const posts = await Canvascustomizedata.find();
-    return res.json(posts);
+    res.json(posts);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -72,21 +75,9 @@ export const getCanvasById = async (req, res) => {
   try {
     const post = await Canvascustomizedata.findById(req.params.id);
     if (!post) return res.status(404).json({ message: "NOT FOUND" });
-    return res.json(post);
+    res.json(post);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-export const uploadImage = (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-    const imageUrl = `${req.protocol}://${req.get("host")}/canvascustomizeUploads/${req.file.filename}`;
-    return res.status(200).json({ imageUrl });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -95,46 +86,38 @@ export const updateCanvas = async (req, res) => {
     const post = await Canvascustomizedata.findById(req.params.id);
     if (!post) return res.status(404).json({ message: "NOT FOUND" });
 
-    const { title, content, rating, thickness, sizes, stock, quantity } = req.body;
+    const { title, content, rating, thickness, sizes, stock, quantity, shape } = req.body;
 
     if (title) post.title = title;
     if (content) post.content = content;
-    if (rating) {
-      const parsedRating = Number(rating);
-      if (isNaN(parsedRating)) return res.status(400).json({ message: "Invalid rating" });
-      post.rating = parsedRating;
-    }
+    if (rating) post.rating = Number(rating);
     if (thickness) post.thickness = thickness;
     if (stock) post.stock = stock;
     if (quantity) post.quantity = quantity;
+    if (shape && ALLOWED_SHAPES.includes(shape)) post.shape = shape;
 
     if (sizes) {
       let parsedSizes = sizes;
-      if (typeof sizes === "string") {
-        try {
-          parsedSizes = JSON.parse(sizes);
-        } catch {
-          return res.status(400).json({ message: "Invalid sizes format" });
-        }
-      }
-      post.sizes = parsedSizes.map(size => {
-        const price = Number(size.price);
-        const original = Number(size.original);
-        if (isNaN(price) || isNaN(original)) {
-          throw new Error("Invalid numeric input in sizes");
-        }
-        return { label: size.label, price, original };
-      });
+      if (typeof sizes === "string") parsedSizes = JSON.parse(sizes);
+      post.sizes = parsedSizes.map(size => ({
+        label: size.label,
+        price: Number(size.price),
+        original: Number(size.original),
+      }));
     }
 
     if (req.file) {
-      post.image = `${req.protocol}://${req.get("host")}/canvascustomizeUploads/${req.file.filename}`;
+      const stream = cloudinary.uploader.upload_stream({ folder: "canvasCustomize" }, (err, result) => {
+        if (err) throw err;
+        post.image = result.secure_url;
+      });
+      stream.end(req.file.buffer);
     }
 
     const updated = await post.save();
-    return res.json(updated);
+    res.json(updated);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -142,8 +125,23 @@ export const deleteCanvas = async (req, res) => {
   try {
     const deleted = await Canvascustomizedata.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "NOT FOUND" });
-    return res.json({ message: "Post deleted" });
+    res.json({ message: "Canvas deleted" });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+    const stream = cloudinary.uploader.upload_stream({ folder: "canvasCustomize" }, (err, result) => {
+      if (err) throw err;
+      res.status(200).json({ imageUrl: result.secure_url });
+    });
+
+    stream.end(req.file.buffer);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

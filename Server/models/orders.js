@@ -1,4 +1,4 @@
-// models/order.js
+// models/orders.js
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
@@ -12,9 +12,10 @@ const orderSchema = new mongoose.Schema({
     address: String,
     pincode: String,
   },
+  image: { type: String }, // Cloudinary image URL
   status: { type: String, default: "pending", enum: ["pending", "completed", "failed", "cancelled"] },
   amount: { type: Number, required: true },
-  paymentId: { type: String }, // Razorpay order ID
+  paymentId: { type: String },
   paymentStatus: { type: String, enum: ["pending", "success", "failed"], default: "pending" },
   paidAt: { type: Date },
 }, { timestamps: true });

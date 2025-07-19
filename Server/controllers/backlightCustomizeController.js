@@ -1,16 +1,31 @@
 import BacklightCustomizedata from "../models/backlightcustomize.js";
-import path from "path";
+import cloudinary from "../config/cloudinary.js";
 
-const ALLOWED_SHAPES = ["Portrait", "Landscape", "Square"];
+// Helper: Upload to Cloudinary from memory buffer
+const uploadToCloudinary = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      { folder: "backlightcustomize" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    ).end(fileBuffer);
+  });
+};
 
+// ✅ Create Backlight Customize Entry
 export const createBacklightCustomize = async (req, res) => {
   try {
     let { title, content, rating, thickness, sizes, stock, quantity, shape } = req.body;
 
+    // Shape Validation
+    const ALLOWED_SHAPES = ["Portrait", "Landscape", "Square"];
     if (!ALLOWED_SHAPES.includes(shape)) {
       return res.status(400).json({ message: "Invalid or missing shape" });
     }
 
+    // Parse sizes (from JSON string to array of objects)
     if (typeof sizes === "string") {
       try {
         sizes = JSON.parse(sizes);
@@ -19,23 +34,19 @@ export const createBacklightCustomize = async (req, res) => {
       }
     }
 
-    const parsedSizes = sizes.map(size => {
-      const price = Number(size.price);
-      const original = Number(size.original);
-      if (isNaN(price) || isNaN(original)) {
-        throw new Error("Invalid numeric input in sizes");
-      }
-      return { label: size.label, price, original };
-    });
+    const parsedSizes = sizes.map(size => ({
+      label: size.label,
+      price: Number(size.price),
+      original: Number(size.original),
+    }));
 
     const parsedRating = Number(rating);
-    if (isNaN(parsedRating)) {
-      return res.status(400).json({ message: "Invalid numeric input in rating" });
-    }
 
-    const uploadedImageUrl = req.file
-      ? `${req.protocol}://${req.get("host")}/backlightcustomizeUploads/${req.file.filename}`
-      : null;
+    let uploadedImageUrl = null;
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer);
+      uploadedImageUrl = result.secure_url;
+    }
 
     const posting = new BacklightCustomizedata({
       title,
@@ -52,95 +63,117 @@ export const createBacklightCustomize = async (req, res) => {
     const PostingComplete = await posting.save();
     return res.status(201).json(PostingComplete);
   } catch (error) {
-    console.error("Backlight Customize POST error:", error.message);
-    return res.status(400).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
+// ✅ Get all
 export const getAllBacklightCustomize = async (req, res) => {
   try {
-    const getPost = await BacklightCustomizedata.find();
-    return res.json(getPost);
+    const data = await BacklightCustomizedata.find();
+    res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
+// ✅ Get by ID
 export const getBacklightCustomizeById = async (req, res) => {
   try {
-    const getPostId = await BacklightCustomizedata.findById(req.params.id);
-    if (!getPostId) return res.status(404).json({ message: "NOT FOUND" });
-    return res.json(getPostId);
+    const data = await BacklightCustomizedata.findById(req.params.id);
+    if (!data) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+    res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-export const uploadBacklightImage = (req, res) => {
+// ✅ Upload image only (optional utility route)
+export const uploadBacklightImage = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/backlightcustomizeUploads/${req.file.filename}`;
-    return res.status(200).json({ imageUrl });
+    const result = await uploadToCloudinary(req.file.buffer);
+    return res.status(200).json({ imageUrl: result.secure_url });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
+// ✅ Update Backlight Customize
 export const updateBacklightCustomize = async (req, res) => {
   try {
-    const post = await BacklightCustomizedata.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "NOT FOUND" });
+    const id = req.params.id;
+    let {
+      title,
+      content,
+      rating,
+      thickness,
+      sizes,
+      stock,
+      quantity,
+      shape
+    } = req.body;
 
-    const { title, content, rating, thickness, sizes, stock, quantity } = req.body;
-
-    if (title) post.title = title;
-    if (content) post.content = content;
-    if (rating) {
-      const parsedRating = Number(rating);
-      if (isNaN(parsedRating)) return res.status(400).json({ message: "Invalid rating" });
-      post.rating = parsedRating;
-    }
-    if (thickness) post.thickness = thickness;
-    if (stock) post.stock = stock;
-    if (quantity) post.quantity = quantity;
-
-    if (sizes) {
-      let parsedSizes = sizes;
-      if (typeof sizes === "string") {
-        try {
-          parsedSizes = JSON.parse(sizes);
-        } catch {
-          return res.status(400).json({ message: "Invalid sizes format" });
-        }
+    if (typeof sizes === "string") {
+      try {
+        sizes = JSON.parse(sizes);
+      } catch {
+        return res.status(400).json({ message: "Invalid sizes format" });
       }
-      post.sizes = parsedSizes.map(size => {
-        const price = Number(size.price);
-        const original = Number(size.original);
-        if (isNaN(price) || isNaN(original)) {
-          throw new Error("Invalid numeric input in sizes");
-        }
-        return { label: size.label, price, original };
-      });
     }
 
+    const parsedSizes = sizes.map(size => ({
+      label: size.label,
+      price: Number(size.price),
+      original: Number(size.original),
+    }));
+
+    const parsedRating = Number(rating);
+
+    let uploadedImageUrl = undefined;
     if (req.file) {
-      post.uploadedImageUrl = `${req.protocol}://${req.get("host")}/backlightcustomizeUploads/${req.file.filename}`;
+      const result = await uploadToCloudinary(req.file.buffer);
+      uploadedImageUrl = result.secure_url;
     }
 
-    const UpdatedPost = await post.save();
-    return res.json(UpdatedPost);
+    const updated = await BacklightCustomizedata.findByIdAndUpdate(
+      id,
+      {
+        title,
+        content,
+        rating: parsedRating,
+        thickness,
+        sizes: parsedSizes,
+        stock,
+        uploadedImageUrl: uploadedImageUrl || undefined,
+        quantity,
+        shape,
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.status(200).json(updated);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
+// ✅ Delete Backlight Customize
 export const deleteBacklightCustomize = async (req, res) => {
   try {
     const deleted = await BacklightCustomizedata.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "NOT FOUND" });
-    return res.json({ message: "Post deleted" });
+    if (!deleted) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+    res.status(200).json({ message: "Item deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

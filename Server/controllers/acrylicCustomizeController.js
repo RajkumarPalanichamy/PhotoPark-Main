@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import Acryliccustomizedata from "../models/acryliccustomize.js";
+import cloudinary from "../config/cloudinary.js";
 
 // Handle __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -45,24 +46,48 @@ export const createAcrylic = async (req, res) => {
       return res.status(400).json({ message: "Invalid numeric input in rating" });
     }
 
-    const uploadedImageUrl = req.file
-      ? `${req.protocol}://${req.get("host")}/acryliccustomizeUploads/${req.file.filename}`
-      : null;
+    let uploadedImageUrl = null;
 
-    const posting = new Acryliccustomizedata({
-      title,
-      content,
-      rating: parsedRating,
-      thickness,
-      sizes: parsedSizes,
-      stock,
-      uploadedImageUrl,
-      quantity,
-      shape,
-    });
+    if (req.file) {
+      const result = await cloudinary.uploader.upload_stream(
+        { resource_type: "image", folder: "acryliccustomize" },
+        async (error, result) => {
+          if (error) throw error;
+          uploadedImageUrl = result.secure_url;
 
-    const PostingComplete = await posting.save();
-    return res.status(201).json(PostingComplete);
+          const posting = new Acryliccustomizedata({
+            title,
+            content,
+            rating: parsedRating,
+            thickness,
+            sizes: parsedSizes,
+            stock,
+            uploadedImageUrl,
+            quantity,
+            shape,
+          });
+
+          const PostingComplete = await posting.save();
+          return res.status(201).json(PostingComplete);
+        }
+      );
+
+      result.end(req.file.buffer);
+    } else {
+      const posting = new Acryliccustomizedata({
+        title,
+        content,
+        rating: parsedRating,
+        thickness,
+        sizes: parsedSizes,
+        stock,
+        uploadedImageUrl: null,
+        quantity,
+        shape,
+      });
+      const PostingComplete = await posting.save();
+      return res.status(201).json(PostingComplete);
+    }
   } catch (error) {
     console.error("Acrylic Customize POST error:", error.message);
     return res.status(400).json({ message: error.message || "Something went wrong" });
@@ -148,7 +173,18 @@ export const updateAcrylic = async (req, res) => {
     }
 
     if (req.file) {
-      post.uploadedImageUrl = `${req.protocol}://${req.get("host")}/acryliccustomizeUploads/${req.file.filename}`;
+      const upload = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { resource_type: "image", folder: "acryliccustomize" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+      post.uploadedImageUrl = upload.secure_url;
     }
 
     const UpdatedPost = await post.save();

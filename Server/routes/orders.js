@@ -6,12 +6,13 @@ import {
   updateOrderStatus,
 } from "../controllers/orderController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import upload from "../middleware/upload.js";
 
 const router = express.Router();
 
-router.post("/", protect, createOrder);         // Create order
-router.get("/", getAllOrders);                  // Get all orders
-router.get("/user/:userId", getUserOrders);     // Get user-specific orders
-router.put("/:id", updateOrderStatus);          // Update order status
+router.post("/", protect, upload.single("image"), createOrder);
+router.get("/", getAllOrders);
+router.get("/user/:userId", getUserOrders);
+router.put("/:id", updateOrderStatus);
 
 export default router;

@@ -1,4 +1,5 @@
 import SpecialOffersdata from "../models/specialoffers.js";
+import { uploadToCloudinary } from "../config/cloudinary.js";
 
 // Helper to parse sizes safely
 const parseSizes = (sizes) => {
@@ -16,14 +17,16 @@ const parseSizes = (sizes) => {
   });
 };
 
-// POST
+// ✅ CREATE Special Offer
 export const createSpecialOffer = async (req, res) => {
   try {
     const { title, content, rating, thickness, sizes, stock, quantity } = req.body;
 
-    const image = req.file
-      ? `${req.protocol}://${req.get("host")}/specialoffersUploads/${req.file.filename}`
-      : null;
+    let imageUrl = null;
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, "special_offers");
+      imageUrl = result.secure_url;
+    }
 
     const parsedSizes = parseSizes(sizes);
     const parsedRating = Number(rating);
@@ -35,7 +38,7 @@ export const createSpecialOffer = async (req, res) => {
       thickness,
       sizes: parsedSizes,
       stock,
-      image,
+      image: imageUrl,
       quantity,
     });
 
@@ -46,7 +49,7 @@ export const createSpecialOffer = async (req, res) => {
   }
 };
 
-// GET ALL
+// ✅ GET All Special Offers
 export const getAllSpecialOffers = async (req, res) => {
   try {
     const posts = await SpecialOffersdata.find();
@@ -56,7 +59,7 @@ export const getAllSpecialOffers = async (req, res) => {
   }
 };
 
-// GET BY ID
+// ✅ GET Special Offer By ID
 export const getSpecialOfferById = async (req, res) => {
   try {
     const post = await SpecialOffersdata.findById(req.params.id);
@@ -67,7 +70,7 @@ export const getSpecialOfferById = async (req, res) => {
   }
 };
 
-// PUT
+// ✅ UPDATE Special Offer
 export const updateSpecialOffer = async (req, res) => {
   try {
     const post = await SpecialOffersdata.findById(req.params.id);
@@ -93,7 +96,8 @@ export const updateSpecialOffer = async (req, res) => {
     if (sizes) post.sizes = parseSizes(sizes);
 
     if (req.file) {
-      post.image = `${req.protocol}://${req.get("host")}/specialoffersUploads/${req.file.filename}`;
+      const result = await uploadToCloudinary(req.file.buffer, "special_offers");
+      post.image = result.secure_url;
     }
 
     const updated = await post.save();
@@ -103,7 +107,7 @@ export const updateSpecialOffer = async (req, res) => {
   }
 };
 
-// DELETE
+// ✅ DELETE Special Offer
 export const deleteSpecialOffer = async (req, res) => {
   try {
     const deleted = await SpecialOffersdata.findByIdAndDelete(req.params.id);

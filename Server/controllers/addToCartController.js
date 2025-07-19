@@ -3,6 +3,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import addtocartdata from "../models/addtocart.js";
+import cloudinary from "../config/cloudinary.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,12 +11,28 @@ const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, "../addtocartUploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
-export const uploadImage = (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+export const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-  const imageUrl = `http://localhost:5000/addtocartUploads/${req.file.filename}`;
-  res.status(200).json({ imageUrl });
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: "image", folder: "addtocart" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    res.status(200).json({ imageUrl: result.secure_url }); // ✅ Cloudinary URL
+  } catch (error) {
+    console.error("Cloudinary upload error:", error);
+    res.status(500).json({ error: "Failed to upload image to Cloudinary." });
+  }
 };
+
 
 export const addToCart = async (req, res) => {
   try {

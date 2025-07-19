@@ -10,6 +10,7 @@ import {
 
 const router = express.Router();
 
+// Image uploads handled via multer middleware
 router.post("/", upload.single("image"), createSpecialOffer);
 router.get("/", getAllSpecialOffers);
 router.get("/:id", getSpecialOfferById);
