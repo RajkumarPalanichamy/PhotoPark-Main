@@ -11,7 +11,7 @@ const FrameOrders = () => {
 
   const fetchOrders = () => {
     axios
-      .get("http://localhost:5000/api/frameorders")
+      .get("https://api.photoparkk.com/api/frameorders")
       .then((res) => setOrders(res.data))
       .catch((err) => console.error("Failed to load orders", err));
   };
@@ -35,7 +35,7 @@ const FrameOrders = () => {
 
     try {
       await axios.patch(
-        `http://localhost:5000/api/frameorders/${orderId}/status`,
+        `https://api.photoparkk.com/api/frameorders/${orderId}/status`,
         {
           status: nextStatus,
         }

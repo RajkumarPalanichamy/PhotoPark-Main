@@ -16,7 +16,7 @@ const FrameCustomizeAdmin = () => {
 
   const fetchFrames = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/framecustomize");
+      const res = await axios.get("https://api.photoparkk.com/api/framecustomize");
       const onlyShapeData = res.data.map((item) => ({
         _id: item._id,
         shapeData: item.shapeData,
@@ -32,7 +32,7 @@ const FrameCustomizeAdmin = () => {
   const deleteFrame = async (id) => {
     if (!window.confirm("Are you sure you want to delete this frame?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/framecustomize/${id}`);
+      await axios.delete(`https://api.photoparkk.com/api/framecustomize/${id}`);
       fetchFrames();
     } catch (err) {
       console.error("Delete error:", err);
@@ -51,7 +51,7 @@ const FrameCustomizeAdmin = () => {
             {color.frameImages.map((frame, idx) => (
               <div key={idx} className="bg-white rounded p-3 shadow">
                 <img
-                  src={`http://localhost:5000/${frame.imageUrl}`}
+                  src={`https://api.photoparkk.com/${frame.imageUrl}`}
                   alt={frame.title}
                   className="w-full h-32 object-cover rounded mb-2"
                 />

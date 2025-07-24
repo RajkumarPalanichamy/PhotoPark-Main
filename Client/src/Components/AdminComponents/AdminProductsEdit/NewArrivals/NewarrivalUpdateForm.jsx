@@ -23,7 +23,7 @@ const NewarrivalUpdateForm = () => {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/newarrivals/${id}`
+          `https://api.photoparkk.com/api/newarrivals/${id}`
         );
         setFormData({
           ...res.data,
@@ -107,7 +107,7 @@ const NewarrivalUpdateForm = () => {
         data.append("image", imageFile);
       }
 
-      await axios.put(`http://localhost:5000/api/newarrivals/${id}`, data, {
+      await axios.put(`https://api.photoparkk.com/api/newarrivals/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

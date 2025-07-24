@@ -95,7 +95,7 @@ const NewArrivalAddForm = () => {
       }
       data.append("image", imageFile);
 
-      await axios.post("http://localhost:5000/api/newarrivals", data, {
+      await axios.post("https://api.photoparkk.com/api/newarrivals", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

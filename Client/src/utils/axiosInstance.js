@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://api.photoparkk.com/api",
 });
 
 // ✅ Add token to every request
@@ -30,7 +30,7 @@ axiosInstance.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refreshToken");
 
-        const res = await axios.post("http://localhost:5000/api/users/refresh-token", {
+        const res = await axios.post("https://api.photoparkk.com/api/users/refresh-token", {
           refreshToken,
         });
 

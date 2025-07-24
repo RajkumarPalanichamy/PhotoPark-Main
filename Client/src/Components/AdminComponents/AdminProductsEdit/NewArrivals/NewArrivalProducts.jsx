@@ -12,7 +12,7 @@ const NewArrivalProducts = () => {
     const fetchNewArrivals = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/newarrivals"
+          "https://api.photoparkk.com/api/newarrivals"
         );
         setNewArrivalItems(response.data);
       } catch (error) {
@@ -27,7 +27,7 @@ const NewArrivalProducts = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/newarrivals/${id}`);
+      await axios.delete(`https://api.photoparkk.com/api/newarrivals/${id}`);
       setNewArrivalItems((prevItems) =>
         prevItems.filter((item) => item._id !== id)
       );

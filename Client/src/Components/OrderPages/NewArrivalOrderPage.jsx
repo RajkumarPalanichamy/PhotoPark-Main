@@ -36,7 +36,7 @@ const NewArrivalOrderPage = () => {
     formData.append("image", uploadedImage);
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/cart/api/upload-image",
+        "https://api.photoparkk.com/api/cart/api/upload-image",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -87,7 +87,7 @@ const NewArrivalOrderPage = () => {
         image: uploadedImageUrl,
       };
 
-      await axios.post("http://localhost:5000/api/cart", cartData);
+      await axios.post("https://api.photoparkk.com/api/cart", cartData);
       alert("✅ Item added to cart successfully!");
       navigate("/cart");
     } catch (error) {
@@ -116,7 +116,7 @@ const NewArrivalOrderPage = () => {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/newarrivals/${id}`
+          `https://api.photoparkk.com/api/newarrivals/${id}`
         );
         setProduct(res.data);
         if (res.data.sizes?.length > 0) setSelectedSize(res.data.sizes[0]);

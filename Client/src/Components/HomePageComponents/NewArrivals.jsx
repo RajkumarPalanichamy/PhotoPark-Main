@@ -15,7 +15,7 @@ const NewArrivals = () => {
     const fetchNewArrivals = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/newarrivals"
+          "https://api.photoparkk.com/api/newarrivals"
         );
         setItems(response.data);
         setLoading(false);

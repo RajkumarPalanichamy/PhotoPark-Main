@@ -20,7 +20,7 @@ const CanvasSquare = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/canvascustomize/upload",
+        "https://api.photoparkk.com/api/canvascustomize/upload",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

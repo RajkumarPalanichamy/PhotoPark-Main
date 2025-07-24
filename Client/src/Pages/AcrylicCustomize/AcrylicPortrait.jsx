@@ -23,7 +23,7 @@ const AcrylicPortrait = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/acryliccustomize/upload",
+        "https://api.photoparkk.com/api/acryliccustomize/upload",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

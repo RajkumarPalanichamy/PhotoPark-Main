@@ -21,7 +21,7 @@ const BacklightPortrait = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/backlightcustomize/upload",
+        "https://api.photoparkk.com/api/backlightcustomize/upload",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

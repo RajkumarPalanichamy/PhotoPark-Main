@@ -10,7 +10,7 @@ const SpecialOffers = () => {
     const fetchSpecialOffers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/specialoffers"
+          "https://api.photoparkk.com/api/specialoffers"
         );
         setOffers(response.data);
       } catch (error) {

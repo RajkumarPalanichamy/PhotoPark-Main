@@ -23,7 +23,7 @@ const SpecialoffersUpdateForm = () => {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/specialoffers/${id}`
+          `https://api.photoparkk.com/api/specialoffers/${id}`
         );
         setFormData({
           ...res.data,
@@ -110,7 +110,7 @@ const SpecialoffersUpdateForm = () => {
         data.append("image", imageFile);
       }
 
-      await axios.put(`http://localhost:5000/api/specialoffers/${id}`, data, {
+      await axios.put(`https://api.photoparkk.com/api/specialoffers/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

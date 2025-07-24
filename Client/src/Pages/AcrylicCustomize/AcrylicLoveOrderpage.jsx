@@ -87,7 +87,7 @@ const AcrylicLoveOrderpage = () => {
         cartData.productId = photoData.productId;
       }
 
-      await axios.post("http://localhost:5000/api/cart", cartData);
+      await axios.post("https://api.photoparkk.com/api/cart", cartData);
       alert("✅ Item added to cart successfully!");
       navigate("/cart"); // ✅ Navigate to cart after success
     } catch (error) {

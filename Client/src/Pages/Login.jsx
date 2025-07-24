@@ -29,7 +29,7 @@ const Login = () => {
 
     try {
       if (currentState === "Sign Up") {
-        await axios.post("http://localhost:5000/api/users/register", {
+        await axios.post("https://api.photoparkk.com/api/users/register", {
           name,
           email,
           password,
@@ -37,7 +37,7 @@ const Login = () => {
         setSuccess("Registered successfully! Please log in.");
         setCurrentState("Login");
       } else {
-        const res = await axios.post("http://localhost:5000/api/users/login", {
+        const res = await axios.post("https://api.photoparkk.com/api/users/login", {
           email,
           password,
         });

@@ -12,7 +12,7 @@ const SpecialOffersProducts = () => {
     const fetchNewArrivals = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/specialoffers"
+          "https://api.photoparkk.com/api/specialoffers"
         );
         setSpecialoffersItems(response.data);
         
@@ -28,7 +28,7 @@ const SpecialOffersProducts = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/specialoffers/${id}`);
+      await axios.delete(`https://api.photoparkk.com/api/specialoffers/${id}`);
       setSpecialoffersItems((prevItems) =>
         prevItems.filter((item) => item._id !== id)
       );

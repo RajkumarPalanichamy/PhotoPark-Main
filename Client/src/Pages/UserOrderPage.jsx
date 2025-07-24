@@ -11,8 +11,8 @@ const UserOrderPage = () => {
     const fetchAllOrders = async () => {
       try {
         const [frameRes, commonRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/frameorders/user/${user._id}`),
-          axios.get(`http://localhost:5000/api/orders/user/${user._id}`),
+          axios.get(`https://api.photoparkk.com/api/frameorders/user/${user._id}`),
+          axios.get(`https://api.photoparkk.com/api/orders/user/${user._id}`),
         ]);
 
         const frameOrders = frameRes.data.map((o) => ({

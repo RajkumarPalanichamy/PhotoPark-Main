@@ -130,7 +130,7 @@ const FrameForm = ({ initialData, onSuccess, onClose }) => {
                   const imageForm = new FormData();
                   imageForm.append("frameImage", img.file);
                   const res = await axios.post(
-                    "http://localhost:5000/api/framecustomize/upload-frame-image",
+                    "https://api.photoparkk.com/api/framecustomize/upload-frame-image",
                     imageForm
                   );
                   return {
@@ -161,11 +161,11 @@ const FrameForm = ({ initialData, onSuccess, onClose }) => {
 
       if (initialData?._id) {
         await axios.put(
-          `http://localhost:5000/api/framecustomize/${initialData._id}`,
+          `https://api.photoparkk.com/api/framecustomize/${initialData._id}`,
           formData
         );
       } else {
-        await axios.post("http://localhost:5000/api/framecustomize", formData);
+        await axios.post("https://api.photoparkk.com/api/framecustomize", formData);
       }
 
       onSuccess();

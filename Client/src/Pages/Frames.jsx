@@ -16,7 +16,7 @@ const Frames = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/framecustomize")
+      .get("https://api.photoparkk.com/api/framecustomize")
       .then((res) => {
         setFrames(res.data.map((f) => f.shapeData));
       })
@@ -38,7 +38,7 @@ const Frames = () => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64Image = reader.result;
-      const safeFrameImageUrl = `http://localhost:5000/${selectedFrameImage.imageUrl.replace(
+      const safeFrameImageUrl = `https://api.photoparkk.com/${selectedFrameImage.imageUrl.replace(
         /\\/g,
         "/"
       )}`;
@@ -208,7 +208,7 @@ const Frames = () => {
                 <div key={i} className="border p-3 mb-3 rounded-lg bg-gray-50">
                   <p className="font-semibold text-lg">{frame.title}</p>
                   <img
-                    src={`http://localhost:5000/${frame.imageUrl.replace(
+                    src={`https://api.photoparkk.com/${frame.imageUrl.replace(
                       /\\/g,
                       "/"
                     )}`}
