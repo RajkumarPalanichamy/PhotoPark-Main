@@ -6,7 +6,7 @@ import {
   logout,
   getProfile,
 } from "../controllers/authController.js";
-import { protect } from "../Middleware/authmiddleware.js";
+import { protect } from "../Middleware/authMiddleware.js";
 
 const router = express.Router();
 

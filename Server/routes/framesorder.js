@@ -5,7 +5,7 @@ import {
   updateFrameOrderStatus,
   getAllFrameOrders,
 } from "../controllers/frameOrderController.js";
-import { protect } from "../Middleware/authmiddleware.js";
+import { protect } from "../Middleware/authMiddleware.js";
 
 const router = express.Router();
 

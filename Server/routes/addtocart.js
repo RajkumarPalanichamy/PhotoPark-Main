@@ -1,6 +1,6 @@
 import express from "express";
 import upload from "../Middleware/upload.js"; // Memory-based multer config
-import { protect } from "../Middleware/authmiddleware.js";
+import { protect } from "../Middleware/authMiddleware.js";
 import {
   uploadImage,
   addToCart,
