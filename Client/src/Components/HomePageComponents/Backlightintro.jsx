@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import BacklightBanner from "../../assets/frontend_assets/BacklightPhotoFrames/BacklightBanner.jpeg";
 import BacklightPortrait from "../../assets/frontend_assets/BacklightPhotoFrames/BacklightPortrait.jpeg";
-import BacklightLandscape from "../../assets/frontend_assets/BacklightPhotoFrames/Landscape.jpeg";
+import BacklightLandscape from "../../assets/frontend_assets/BacklightPhotoFrames/LandScape.jpeg";
 import BacklightSquare from "../../assets/frontend_assets/BacklightPhotoFrames/Square.jpeg";
 
 const steps = ["Select Shape", "Upload Image", "Place Order"];
