@@ -1,5 +1,5 @@
 import express from "express";
-import upload from "../middleware/upload.js"; // uses memoryStorage
+import upload from "../Middleware/upload.js"; // uses memoryStorage
 import {
   createBacklightCustomize,
   getAllBacklightCustomize,

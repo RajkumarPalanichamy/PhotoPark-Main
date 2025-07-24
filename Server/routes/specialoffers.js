@@ -1,5 +1,5 @@
 import express from "express";
-import { upload } from "../middleware/multerConfig.js";
+import { upload } from "../Middleware/multerConfig.js";
 import {
   createSpecialOffer,
   getAllSpecialOffers,
