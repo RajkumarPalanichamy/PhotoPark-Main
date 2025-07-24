@@ -5,7 +5,7 @@ import {
   getUserOrders,
   updateOrderStatus,
 } from "../controllers/orderController.js";
-import { protect } from "../Middleware/authMiddleware.js";
+import { protect } from "../Middleware/authmiddleware.js";
 import upload from "../Middleware/upload.js";
 
 const router = express.Router();

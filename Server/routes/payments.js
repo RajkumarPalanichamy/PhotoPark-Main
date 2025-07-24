@@ -1,6 +1,6 @@
 // routes/paymentRoutes.js
 import express from "express";
-import { protect } from "../Middleware/authMiddleware.js";
+import { protect } from "../Middleware/authmiddleware.js";
 import { createOrder, verifyPayment } from "../controllers/paymentController.js";
 
 const router = express.Router();
