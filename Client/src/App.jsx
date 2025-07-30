@@ -15,6 +15,8 @@ import TermsAndConditions from "./Pages/TermsAndConditions";
 import RefundAndCancellationPolicy from "./Pages/RefundAndCancellationPolicy";
 import ShippingPolicy from "./Pages/ShippingPolicy";
 
+// Cart Context
+import { CartProvider } from "./context/CartContext";
 
 //--------------PrivateRoute and AdminRoute-------
 import PrivateRoute from "./routes/AdminRoute";
@@ -94,10 +96,12 @@ import CommonOrder from "./Components/AdminComponents/CommonOrder";
 //Footer
 import Footer from "./Components/Footer";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <>
+    <CartProvider>
       <div>
         <BrowserRouter>
           <Navbar />
@@ -280,8 +284,9 @@ function App() {
           </Routes>
           <Footer />
         </BrowserRouter>
+        <ToastContainer position="top-right" autoClose={2000} />
       </div>
-    </>
+    </CartProvider>
   );
 }
 

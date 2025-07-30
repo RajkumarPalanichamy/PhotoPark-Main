@@ -1,8 +1,20 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Upload, Crop, Palette, Image as ImageIcon, Ruler } from "lucide-react";
+import {
+  MdFileUpload,
+  MdCrop,
+  MdColorLens,
+  MdImage,
+  MdStraighten,
+  MdPreview,
+  MdClose,
+  MdShoppingCartCheckout,
+  MdListAlt,
+  MdCheckCircle,
+  MdSquareFoot,
+  MdPhotoCamera,
+} from "react-icons/md";
 
 const Frames = () => {
   const [frames, setFrames] = useState([]);
@@ -76,10 +88,10 @@ const Frames = () => {
     };
 
     return (
-      <div className="mx-auto w-80 h-80 flex items-center justify-center">
+      <div className="mx-auto w-80 h-80 bg-[#fffcf2]  flex items-center justify-center">
         <div
-          className={`w-full h-full p-2 rounded-2xl border-[10px] shadow-2xl bg-white flex items-center justify-center transition-transform duration-300 hover:scale-105 ${shapeClasses[shapeName]}`}
-          style={{ borderColor: borderColor, borderStyle: "solid" }}
+          className={`w-full h-full p-2 rounded-2xl border-[10px] shadow-2xl flex items-center justify-center transition-transform duration-300 hover:scale-105 ${shapeClasses[shapeName]}`}
+          style={{ borderColor }}
         >
           <img
             src={imageUrl}
@@ -92,21 +104,19 @@ const Frames = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-pink-100 p-6">
-      {/* Title */}
+    <div className="min-h-screen bg-white p-6">
       <div className="text-center mb-10">
         <h1 className="text-4xl md:text-5xl font-extrabold text-orange-500 drop-shadow-xl">
           Frame Customizer
         </h1>
 
-        {/* Stylish Steps */}
         <div className="mt-8 flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
           {[
-            { icon: <Upload size={24} />, label: "Step 1: Upload Image" },
-            { icon: <Crop size={24} />, label: "Step 2: Choose Shape" },
-            { icon: <Palette size={24} />, label: "Step 3: Choose Colour" },
-            { icon: <ImageIcon size={24} />, label: "Step 4: Select Frame" },
-            { icon: <Ruler size={24} />, label: "Step 5: Pick Size" },
+            { icon: <MdFileUpload size={24} />, label: "Upload Image" },
+            { icon: <MdCrop size={24} />, label: "Choose Shape" },
+            { icon: <MdColorLens size={24} />, label: "Choose Colour" },
+            { icon: <MdImage size={24} />, label: "Select Frame" },
+            { icon: <MdStraighten size={24} />, label: "Pick Size" },
           ].map((step, i) => (
             <div
               key={i}
@@ -121,17 +131,16 @@ const Frames = () => {
         </div>
       </div>
 
-      {/* Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-7xl mx-auto">
-        {/* Left: Preview Panel */}
         <div className="bg-white p-8 rounded-3xl shadow-2xl border border-purple-200">
-          <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">
-            🖼️ Live Frame Preview
+          <h2 className="text-2xl font-bold text-center text-blue-800 mb-6 flex items-center justify-center gap-2">
+            <MdPreview /> Live Frame Preview
           </h2>
           {renderShape()}
           <div className="mt-6">
-            <label className="block text-lg font-medium mb-2 text-gray-800">
-              📤 Upload or Replace Your Photo
+            <label className="block text-lg font-medium mb-2 text-gray-800 flex items-center gap-2">
+              <MdPhotoCamera />
+              Upload or Replace Your Photo
             </label>
             <input
               type="file"
@@ -141,26 +150,27 @@ const Frames = () => {
             />
             {userImage && (
               <div className="mt-2 text-sm text-gray-600">
-                ✅ Image uploaded successfully.
-                <br />
+                <div className="flex items-center gap-2 text-green-600">
+                  <MdCheckCircle />
+                  Image uploaded successfully.
+                </div>
                 <button
                   onClick={() => setUserImage(null)}
-                  className="text-red-600 underline text-sm mt-1"
+                  className="text-red-600 underline text-sm mt-1 flex items-center gap-1"
                 >
-                  ❌ Remove
+                  <MdClose />
+                  Remove
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Right: Controls */}
         <div className="bg-white p-6 rounded-3xl shadow-xl border border-blue-200">
-          <h2 className="text-xl font-bold text-blue-800 mb-4">
-            🛠 Customize Options
+          <h2 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">
+            <MdListAlt /> Customize Options
           </h2>
 
-          {/* Shape */}
           <label className="font-medium">Select Shape</label>
           <select
             value={selectedShape?.shape || ""}
@@ -181,7 +191,6 @@ const Frames = () => {
             ))}
           </select>
 
-          {/* Color */}
           {selectedShape && (
             <>
               <label className="font-medium">Select Color</label>
@@ -200,7 +209,6 @@ const Frames = () => {
             </>
           )}
 
-          {/* Frame and Size */}
           {selectedColor &&
             selectedShape.colorOptions
               .find((c) => c.color === selectedColor)
@@ -236,7 +244,6 @@ const Frames = () => {
                 </div>
               ))}
 
-          {/* Quantity */}
           {selectedSize && (
             <div className="mt-4">
               <label className="font-medium">Quantity:</label>
@@ -250,14 +257,14 @@ const Frames = () => {
             </div>
           )}
 
-          {/* Summary */}
           {selectedShape &&
             selectedColor &&
             selectedFrameImage &&
             selectedSize && (
               <div className="mt-8 p-5 bg-yellow-50 rounded-xl border shadow text-lg space-y-2">
-                <h3 className="text-xl font-bold text-center text-yellow-800">
-                  🧾 Order Summary
+                <h3 className="text-xl font-bold text-center text-yellow-800 flex items-center justify-center gap-2">
+                  <MdListAlt />
+                  Order Summary
                 </h3>
                 <p>
                   <strong>Shape:</strong> {selectedShape.shape}
@@ -283,14 +290,14 @@ const Frames = () => {
               </div>
             )}
 
-          {/* Buy Now */}
           {selectedSize && (
             <div className="flex justify-center mt-6">
               <button
                 onClick={handleBuyNow}
-                className="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700"
+                className="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 flex items-center gap-2"
               >
-                💳 Buy Now
+                <MdShoppingCartCheckout />
+                Buy Now
               </button>
             </div>
           )}

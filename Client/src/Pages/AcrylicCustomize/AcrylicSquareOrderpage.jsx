@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaShoppingCart, FaPhoneAlt } from "react-icons/fa";
+import { FaShoppingCart, FaPhoneAlt, FaTruck, FaLock } from "react-icons/fa";
+import { BsPatchCheckFill } from "react-icons/bs";
 import axios from "axios";
 
 const AcrylicSquareOrderpage = () => {
@@ -88,11 +89,11 @@ const AcrylicSquareOrderpage = () => {
       }
 
       await axios.post("https://api.photoparkk.com/api/cart", cartData);
-      alert("✅ Item added to cart successfully!");
-      navigate("/cart"); // ✅ Go to cart after success
+      alert("Item added to cart successfully!");
+      navigate("/cart");
     } catch (error) {
       console.error("Add to cart failed", error);
-      alert("❌ Failed to add to cart.");
+      alert("Failed to add to cart.");
     } finally {
       setLoading(false);
     }
@@ -101,7 +102,7 @@ const AcrylicSquareOrderpage = () => {
   if (!photoData) {
     return (
       <div className="p-8 text-center text-lg text-red-600">
-        ❌ No image found. Please upload again.
+        No image found. Please upload again.
       </div>
     );
   }
@@ -109,13 +110,12 @@ const AcrylicSquareOrderpage = () => {
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
-        {/* Upload + Preview */}
+        {/* Uploaded Image */}
         <div className="space-y-6">
-          <label className="block text-2xl font-semibold text-center mb-3">
-            <p>Your Custom Photo</p>
-            <p>Preview from Uploaded Design</p>
-          </label>
-          <div className="rounded-lg shadow-md overflow-hidden border border-gray-200">
+          <h2 className="text-2xl font-semibold text-center">
+            Your Custom Photo
+          </h2>
+          <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
             <img
               src={photoData?.url}
               alt={photoData?.name || "Uploaded"}
@@ -125,11 +125,11 @@ const AcrylicSquareOrderpage = () => {
         </div>
 
         {/* Product Info */}
-        <div className="space-y-6 border p-6 rounded-2xl shadow-md bg-white max-w-xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-800">{product.title}</h2>
+        <div className="bg-white p-6 rounded-2xl shadow-md border-gray-800 space-y-6">
+          <h2 className="text-2xl font-bold text-gray-800">{product.title}</h2>
 
           <div className="text-3xl font-bold text-yellow-500">
-            ₹{selectedSize?.price || "0"}
+            ₹{selectedSize?.price || 0}
             {selectedSize?.original && (
               <>
                 <span className="ml-3 text-xl text-gray-400 line-through">
@@ -143,16 +143,14 @@ const AcrylicSquareOrderpage = () => {
           </div>
 
           <div className="text-sm text-red-600 font-medium">
-            ⏰ Hurry! Only a few pieces left at this price.
+            Limited stock available at this price.
           </div>
 
-          {/* Size Selection */}
+          {/* Size */}
           <div>
-            <label className="block text-xl font-semibold mb-3">
-              Select Size
-            </label>
+            <label className="block text-xl font-semibold mb-3">Size</label>
             <div className="flex flex-wrap gap-3">
-              {product.sizes?.map((sizeObj, i) => (
+              {product.sizes.map((sizeObj, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedSize(sizeObj)}
@@ -169,10 +167,10 @@ const AcrylicSquareOrderpage = () => {
             </div>
           </div>
 
-          {/* Thickness Selection */}
+          {/* Thickness */}
           <div>
             <label className="block text-xl font-semibold mb-3">
-              Select Thickness
+              Thickness
             </label>
             <div className="flex flex-wrap gap-3">
               {product.thickness.map((thick, i) => (
@@ -191,7 +189,7 @@ const AcrylicSquareOrderpage = () => {
             </div>
           </div>
 
-          {/* Quantity + Add to Cart */}
+          {/* Quantity & Cart */}
           <div className="flex items-center gap-5 mt-6">
             <label className="text-lg font-medium text-gray-700">Qty:</label>
             <input
@@ -206,50 +204,55 @@ const AcrylicSquareOrderpage = () => {
               disabled={loading}
               className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 font-semibold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
             >
-              <FaShoppingCart size={20} />
+              <FaShoppingCart size={18} />
               {loading ? "Adding..." : "Add to Cart"}
             </button>
           </div>
 
-          <div className="text-lg text-gray-500 mt-4">
-            🚚 Estimated delivery in{" "}
-            <span className="text-black font-medium">4–7 working days</span>
+          {/* Delivery Info */}
+          <div className="flex items-center gap-2 text-gray-700 mt-4">
+            <FaTruck />
+            <span>Estimated delivery in 4–7 working days</span>
           </div>
-          <div className="text-center text-green-700 font-semibold text-lg mt-4">
-            🔒 Secure Checkout | 100% Satisfaction Guarantee
+          <div className="flex items-center gap-2 text-green-700 font-semibold">
+            <FaLock />
+            <span>Secure Checkout | Satisfaction Guaranteed</span>
           </div>
         </div>
 
-        {/* Highlights & Bulk Enquiry */}
-        <div className="bg-white p-6 rounded-2xl shadow-lg space-y-8 border border-gray-200">
+        {/* Highlights + Bulk Order */}
+        <div className="bg-white p-6 rounded-2xl shadow-md border-gray-300 space-y-8">
           <div>
-            <h4 className="text-xl font-bold text-center mb-4 tracking-wide">
-              HIGHLIGHTS
-            </h4>
+            <h4 className="text-xl font-bold text-center mb-4">Highlights</h4>
             <ul className="list-disc list-inside space-y-2 text-gray-700 text-base">
               {product.highlights.map((item, i) => (
-                <li key={i}>{item}</li>
+                <li key={i} className="flex items-start gap-2">
+                  <BsPatchCheckFill className="text-green-600 mt-1" />
+                  <span>{item}</span>
+                </li>
               ))}
             </ul>
           </div>
 
           <div className="text-center text-sm text-gray-800 space-y-4">
             <p className="text-lg font-semibold text-black">
-              NEED BULK QUANTITIES?
+              Need Bulk Quantities?
             </p>
             <p className="text-base text-orange-600 font-medium">
-              Amazing Deals on Bulk Orders Available Now!
+              Special Deals on Bulk Orders!
             </p>
             <p className="text-gray-600">
-              Perfect for Gifts and Return Gifts for any occasion.
+              Ideal for Corporate Gifting and Celebrations.
             </p>
+
             <button
               onClick={() => (window.location.href = "tel:9940770011")}
               className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-lg w-full flex items-center justify-center gap-3 font-semibold transition duration-200 shadow"
             >
               <FaPhoneAlt size={18} />
-              Call & Book Bulk Orders
+              Call for Bulk Orders
             </button>
+
             <button
               onClick={() =>
                 window.open("https://wa.me/919940770011", "_blank")
@@ -257,7 +260,7 @@ const AcrylicSquareOrderpage = () => {
               className="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-lg w-full flex items-center justify-center gap-3 font-semibold transition duration-200 shadow"
             >
               <FaPhoneAlt size={18} />
-              Chat on WhatsApp for Bulk Orders
+              WhatsApp Us
             </button>
           </div>
         </div>

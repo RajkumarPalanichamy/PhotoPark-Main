@@ -115,13 +115,24 @@ export const getAcrylicById = async (req, res) => {
   }
 };
 
-export const uploadImage = (req, res) => {
+export const uploadImage = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-    const imageUrl = `${req.protocol}://${req.get("host")}/acryliccustomizeUploads/${req.file.filename}`;
-    return res.status(200).json({ imageUrl });
+
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "acryliccustomize" },
+      (err, result) => {
+        if (err) {
+          console.error("Cloudinary upload error:", err);
+          return res.status(500).json({ message: "Upload failed" });
+        }
+        res.status(200).json({ imageUrl: result.secure_url });
+      }
+    );
+
+    stream.end(req.file.buffer);
   } catch (error) {
     console.error("Image upload error:", error.message);
     return res.status(500).json({ message: error.message });

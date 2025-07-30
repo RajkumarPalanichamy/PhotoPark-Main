@@ -1,30 +1,41 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
+import { toast } from "react-toastify";
+import LoadingBar from "../../Components/LoadingBar";
 import { Upload, X, Image, Eye } from "lucide-react";
 
 const BacklightLandscape = () => {
   const [photoData, setPhotoData] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [lightOn, setLightOn] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   const handleFileUpload = async (file) => {
     if (!file.type.match("image.*")) {
-      alert("Please select a valid image");
+      toast.error("Please select a valid image");
       return;
     }
 
     const formData = new FormData();
     formData.append("image", file);
 
+    setIsUploading(true);
+    setUploadProgress(0);
+
     try {
-      const res = await axios.post(
-        "https://api.photoparkk.com/api/backlightcustomize/upload",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const res = await axiosInstance.post("/backlightcustomize/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(progress);
+        },
+      });
 
       const imageUrl = res.data.imageUrl || res.data.uploadedImageUrl;
 
@@ -35,10 +46,13 @@ const BacklightLandscape = () => {
         type: file.type,
       });
 
-      alert("Image upload successful!");
+      toast.success("Image upload successful!");
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Image upload failed. Please try again.");
+      toast.error("Image upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -76,7 +90,7 @@ const BacklightLandscape = () => {
 
   const handlePreviewClick = () => {
     if (!photoData) {
-      alert("Please upload a photo first.");
+      toast.error("Please upload a photo first.");
       return;
     }
     navigate("/BacklightlanScapeOrderpage", { state: { photoData } });
@@ -114,7 +128,7 @@ const BacklightLandscape = () => {
                   isDragging
                     ? "border-blue-500 bg-blue-50"
                     : "border-gray-300 hover:border-gray-400"
-                }`}
+                } ${isUploading ? "pointer-events-none opacity-50" : ""}`}
               >
                 <div className="flex flex-col items-center justify-center space-y-4">
                   <div className="bg-gray-100 p-3 rounded-full">
@@ -125,7 +139,8 @@ const BacklightLandscape = () => {
                   </p>
                   <button
                     onClick={handleReplaceClick}
-                    className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
+                    disabled={isUploading}
+                    className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Browse Image
                   </button>
@@ -152,7 +167,8 @@ const BacklightLandscape = () => {
                   </div>
                   <button
                     onClick={handleRemovePhoto}
-                    className="p-1 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                    disabled={isUploading}
+                    className="p-1 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -169,7 +185,8 @@ const BacklightLandscape = () => {
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
-                    className="w-full py-2 px-4 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-700 flex items-center justify-center"
+                    disabled={isUploading}
+                    className="w-full py-2 px-4 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Replace Photo
@@ -177,6 +194,13 @@ const BacklightLandscape = () => {
                 </div>
               </div>
             )}
+
+            {/* Loading Bar */}
+            <LoadingBar 
+              progress={uploadProgress} 
+              isUploading={isUploading} 
+              message="Uploading your backlight frame image..."
+            />
           </div>
 
           {/* Frame Preview */}

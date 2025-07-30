@@ -9,9 +9,11 @@ import {
   FaStar,
 } from "react-icons/fa";
 import axios from "axios";
+import { useCart } from "../../context/CartContext";
 
 const NewArrivalOrderPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -20,7 +22,7 @@ const NewArrivalOrderPage = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [userId, setUserId] = useState(null);
-  const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -87,9 +89,13 @@ const NewArrivalOrderPage = () => {
         image: uploadedImageUrl,
       };
 
-      await axios.post("https://api.photoparkk.com/api/cart", cartData);
-      alert("✅ Item added to cart successfully!");
-      navigate("/cart");
+      const result = await addToCart(cartData);
+      if (result.success) {
+        alert("✅ Item added to cart successfully!");
+        navigate("/cart");
+      } else {
+        alert("Failed to add to cart.");
+      }
     } catch (error) {
       console.error("Add to cart failed", error);
       alert("Failed to add to cart.");

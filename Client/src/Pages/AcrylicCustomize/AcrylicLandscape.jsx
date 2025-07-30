@@ -2,10 +2,13 @@ import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Upload, X, Image, Eye } from "lucide-react";
+import LoadingBar from "../../Components/LoadingBar";
 
 const AcrylicLandscape = () => {
   const [photoData, setPhotoData] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -15,15 +18,24 @@ const AcrylicLandscape = () => {
       return;
     }
 
+    setIsUploading(true);
+    setUploadProgress(0);
+
     const formData = new FormData();
     formData.append("image", file);
 
     try {
       const res = await axios.post(
-        "https://api.photoparkk.com/api/acryliccustomize/upload",
+        "/api/acryliccustomize/upload",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadProgress(percentCompleted);
+          },
         }
       );
 
@@ -40,6 +52,9 @@ const AcrylicLandscape = () => {
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Image upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -108,31 +123,64 @@ const AcrylicLandscape = () => {
             </h2>
             {!photoData ? (
               <div
-                onDragOver={handleDragOver}
+                onDragOver={(e) => {
+                  if (isUploading) return;
+                  handleDragOver(e);
+                }}
                 onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
+                onDrop={(e) => {
+                  if (isUploading) return;
+                  handleDrop(e);
+                }}
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  isDragging
+                  isUploading
+                    ? "border-gray-200 bg-gray-50 cursor-not-allowed"
+                    : isDragging
                     ? "border-blue-500 bg-blue-50"
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               >
                 <div className="flex flex-col items-center justify-center space-y-4">
-                  <div className="bg-gray-100 p-3 rounded-full">
-                    <Image className="w-8 h-8 text-gray-500" />
-                  </div>
-                  <p className="text-base text-gray-700">
-                    Drag and drop your photo here, or
-                  </p>
-                  <button
-                    onClick={handleReplaceClick}
-                    className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
-                  >
-                    Browse Image
-                  </button>
-                  <p className="text-sm text-gray-500">
-                    PNG, JPG, GIF up to 5MB
-                  </p>
+                  {isUploading ? (
+                    <>
+                      <div className="bg-gray-100 p-3 rounded-full">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                      </div>
+                      <p className="text-base text-gray-700">
+                        Uploading your image...
+                      </p>
+                      <div className="w-full max-w-xs">
+                        <div className="flex justify-between text-sm text-gray-600 mb-2">
+                          <span>Progress</span>
+                          <span>{uploadProgress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-300 ease-out"
+                            style={{ width: `${uploadProgress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="bg-gray-100 p-3 rounded-full">
+                        <Image className="w-8 h-8 text-gray-500" />
+                      </div>
+                      <p className="text-base text-gray-700">
+                        Drag and drop your photo here, or
+                      </p>
+                      <button
+                        onClick={handleReplaceClick}
+                        className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
+                      >
+                        Browse Image
+                      </button>
+                      <p className="text-sm text-gray-500">
+                        PNG, JPG, GIF up to 5MB
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             ) : (
@@ -160,20 +208,38 @@ const AcrylicLandscape = () => {
                 </div>
 
                 <div className="relative w-full max-h-[400px] flex justify-center items-center bg-gray-50 rounded-md overflow-hidden border border-gray-200">
-                  <img
-                    src={photoData.url}
-                    alt="Uploaded preview"
-                    className="max-w-full max-h-[380px] object-contain"
-                  />
+                  {isUploading ? (
+                    <LoadingBar progress={uploadProgress} isUploading={isUploading} />
+                  ) : (
+                    <img
+                      src={photoData.url}
+                      alt="Uploaded preview"
+                      className="max-w-full max-h-[380px] object-contain"
+                    />
+                  )}
                 </div>
 
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
-                    className="w-full py-2 px-4 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-700 flex items-center justify-center"
+                    disabled={isUploading}
+                    className={`w-full py-2 px-4 text-sm font-medium rounded-md flex items-center justify-center ${
+                      isUploading
+                        ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                        : "bg-gray-800 text-white hover:bg-gray-700"
+                    }`}
                   >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Replace Photo
+                    {isUploading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Replace Photo
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { User, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
+import { useCart } from "../context/CartContext";
 
 const StyledNavLink = ({ to, children, className }) => (
   <NavLink
@@ -28,6 +29,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const navRef = useRef(null);
   const profileRef = useRef(null);
+  const { cartCount } = useCart();
 
   useEffect(() => {
     const loadAuthFromLocalStorage = () => {
@@ -67,6 +69,7 @@ const Navbar = () => {
       }
       if (navRef.current && !navRef.current.contains(event.target)) {
         setMobileMenuOpen(false);
+        setDropdownVisible(false);
       }
     };
 
@@ -90,15 +93,15 @@ const Navbar = () => {
     <nav className="py-5 px-4 md:px-6 z-10 font-medium relative" ref={navRef}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <NavLink to='/'>
-        <div className="flex flex-col leading-tight">
+        <NavLink to="/">
+          <div className="flex flex-col leading-tight">
             <span className="text-xl font-bold text-gray-900 tracking-wide uppercase">
               PHOTO PARKK
             </span>
             <span className="text-[14px] font-medium text-center text-gray-500 tracking-wider uppercase">
               (since 1986)
             </span>
-        </div>
+          </div>
         </NavLink>
 
         {/* Desktop Menu */}
@@ -106,38 +109,47 @@ const Navbar = () => {
           <li className="group">
             <StyledNavLink to="/">HOME</StyledNavLink>
           </li>
-          <li
-            className="group relative"
-            onMouseEnter={() => setDropdownVisible(true)}
-            onMouseLeave={() => setDropdownVisible(false)}
-          >
-            <div className="flex items-center gap-1 cursor-pointer text-gray-700 hover:text-gray-900">
+
+          <li className="group relative">
+            <div
+              className="flex items-center gap-1 cursor-pointer text-gray-700 hover:text-gray-900"
+              onClick={() => setDropdownVisible((prev) => !prev)}
+            >
               <span>SHOP</span>
-              <ChevronDown size={14} />
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${
+                  dropdownVisible ? "rotate-180" : ""
+                }`}
+              />
             </div>
             {dropdownVisible && (
               <div className="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 w-48 bg-white shadow-md rounded-md z-50 py-1 border">
                 <NavLink
                   to="/shop/acrylic"
                   className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setDropdownVisible(false)}
                 >
                   Acrylic
                 </NavLink>
                 <NavLink
                   to="/shop/canvas"
                   className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setDropdownVisible(false)}
                 >
                   Canvas
                 </NavLink>
                 <NavLink
                   to="/shop/backlight-frames"
                   className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setDropdownVisible(false)}
                 >
                   Backlight Photo Frames
                 </NavLink>
               </div>
             )}
           </li>
+
           <li className="group">
             <StyledNavLink to="/frames">FRAMES</StyledNavLink>
           </li>
@@ -159,14 +171,13 @@ const Navbar = () => {
 
         {/* Right Section */}
         <div className="flex items-center gap-4">
-          {/* Show hello name for all screen sizes */}
           {isAuthenticated && (
             <span className="text-sm text-gray-700 font-medium max-w-[120px] truncate">
               Hello, {userName || "Guest"}
             </span>
           )}
 
-          {/* User Icon + Dropdown */}
+          {/* Profile Icon */}
           <div className="relative" ref={profileRef}>
             <button onClick={() => setProfileDropdown(!profileDropdown)}>
               <User size={20} strokeWidth={1.5} className="text-gray-800" />
@@ -218,9 +229,11 @@ const Navbar = () => {
               strokeWidth={1.5}
               className="text-gray-800"
             />
-            <span className="absolute -right-1.5 -bottom-1.5 w-4 h-4 flex items-center justify-center bg-gray-900 text-white text-[10px] rounded-full">
-              12
-            </span>
+            {cartCount > 0 && (
+              <span className="absolute -right-1.5 -bottom-1.5 w-4 h-4 flex items-center justify-center bg-gray-900 text-white text-[10px] rounded-full">
+                {cartCount}
+              </span>
+            )}
           </NavLink>
 
           {/* Mobile Menu Button */}

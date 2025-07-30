@@ -84,15 +84,11 @@ const Footer = () => {
             <a href="#" className="hover:text-white">
               <FaFacebookF />
             </a>
-            <a href="#" className="hover:text-white">
-              <FaTwitter />
-            </a>
-            <a href="#" className="hover:text-white">
+           
+            <a href="https://www.instagram.com/photoparkk_?igsh=MWI3aGNmZDZ6NnFrOQ==" className="hover:text-white">
               <FaInstagram />
             </a>
-            <a href="#" className="hover:text-white">
-              <FaLinkedinIn />
-            </a>
+           
           </div>
         </div>
       </div>

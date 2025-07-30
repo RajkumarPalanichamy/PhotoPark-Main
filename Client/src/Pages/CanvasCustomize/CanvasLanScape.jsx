@@ -2,44 +2,52 @@ import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Upload, X, Image, Eye } from "lucide-react";
+import LoadingBar from "../../Components/LoadingBar";
+import { toast } from "react-toastify";
 
 const CanvasLandscape = () => {
   const [photoData, setPhotoData] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   const handleFileUpload = async (file) => {
     if (!file.type.match("image.*")) {
-      alert("Please select a valid image");
+      toast.error("Please select a valid image");
       return;
     }
-
+    setIsUploading(true);
+    setUploadProgress(0);
     const formData = new FormData();
     formData.append("image", file);
-
     try {
       const res = await axios.post(
-        "https://api.photoparkk.com/api/canvascustomize/upload",
+        "/api/canvascustomize/upload",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          },
         }
       );
-
       const imageUrl = res.data.imageUrl || res.data.uploadedImageUrl;
-
       setPhotoData({
         url: imageUrl,
         name: file.name,
         size: file.size,
         type: file.type,
       });
-
-      alert("Image upload successful!");
+      toast.success("Image uploaded successfully!");
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Image upload failed. Please try again.");
+      toast.error("Image upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -77,7 +85,7 @@ const CanvasLandscape = () => {
 
   const handlePreviewClick = () => {
     if (!photoData) {
-      alert("Please upload a photo first.");
+      toast.error("Please upload a photo first.");
       return;
     }
     navigate("/CanvasLandScapeOrder", {
@@ -100,7 +108,6 @@ const CanvasLandscape = () => {
         accept="image/*"
         className="hidden"
       />
-
       <div className="bg-white rounded-lg shadow-xl overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Upload Section */}
@@ -160,7 +167,6 @@ const CanvasLandscape = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-
                 <div className="relative w-full max-h-[400px] flex justify-center items-center bg-gray-50 rounded-md overflow-hidden border border-gray-200">
                   <img
                     src={photoData.url}
@@ -168,7 +174,6 @@ const CanvasLandscape = () => {
                     className="max-w-full max-h-[380px] object-contain"
                   />
                 </div>
-
                 <div className="mt-3">
                   <button
                     onClick={handleReplaceClick}
@@ -181,7 +186,6 @@ const CanvasLandscape = () => {
               </div>
             )}
           </div>
-
           {/* Frame Preview (Landscape Shape) */}
           <div className="flex-1 mt-8 md:mt-0">
             <div className="flex justify-between items-center mb-4">
@@ -201,7 +205,6 @@ const CanvasLandscape = () => {
                 Preview
               </button>
             </div>
-
             <div className="relative w-full max-w-[500px] aspect-[4/3] mx-auto rounded-xl border-5 border-black-300 shadow-inner bg-white overflow-hidden">
               {photoData ? (
                 <img
@@ -224,6 +227,7 @@ const CanvasLandscape = () => {
           </div>
         </div>
       </div>
+      {isUploading && <LoadingBar progress={uploadProgress} />}
     </div>
   );
 };

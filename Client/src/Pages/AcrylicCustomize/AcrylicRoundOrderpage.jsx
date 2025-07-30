@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // <-- added useNavigate
-import { FaShoppingCart, FaPhoneAlt } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  FaShoppingCart,
+  FaPhoneAlt,
+  FaTruck,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaWhatsapp,
+} from "react-icons/fa";
 import axios from "axios";
 
 const AcrylicRoundOrderpage = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // <-- added navigate
+  const navigate = useNavigate();
   const { photoData } = location.state || {};
 
   const [product, setProduct] = useState({
@@ -91,7 +98,7 @@ const AcrylicRoundOrderpage = () => {
 
       await axios.post("https://api.photoparkk.com/api/cart", cartData);
       alert("✅ Item added to cart successfully!");
-      navigate("/cart"); // <-- Navigate to cart after success
+      navigate("/cart");
     } catch (error) {
       console.error("Add to cart failed", error);
       alert("❌ Failed to add to cart.");
@@ -144,8 +151,9 @@ const AcrylicRoundOrderpage = () => {
             )}
           </div>
 
-          <div className="text-sm text-red-600 font-medium">
-            ⏰ Hurry! Only a few pieces left at this price.
+          <div className="text-sm text-red-600 font-medium flex items-center gap-2">
+            <FaExclamationTriangle className="text-red-500" />
+            Hurry! Only a few pieces left at this price.
           </div>
 
           <div>
@@ -213,12 +221,15 @@ const AcrylicRoundOrderpage = () => {
             </button>
           </div>
 
-          <div className="text-lg text-gray-500 mt-4">
-            🚚 Estimated delivery in{" "}
+          <div className="text-lg text-gray-500 mt-4 flex items-center gap-2">
+            <FaTruck className="text-green-600" />
+            Estimated delivery in{" "}
             <span className="text-black font-medium">4–7 working days</span>
           </div>
-          <div className="text-center text-green-700 font-semibold text-lg mt-4">
-            🔒 Secure Checkout | 100% Satisfaction Guarantee
+
+          <div className="text-center text-green-700 font-semibold text-lg mt-4 flex items-center justify-center gap-2">
+            <FaCheckCircle className="text-green-600" />
+            Secure Checkout | 100% Satisfaction Guarantee
           </div>
         </div>
 
@@ -229,19 +240,7 @@ const AcrylicRoundOrderpage = () => {
               HIGHLIGHTS
             </h4>
             <ul className="list-disc list-inside space-y-2 text-gray-700 text-base">
-              {(product.highlights?.length
-                ? product.highlights
-                : [
-                    "High-Quality Finish & Durable Material",
-                    "Perfect for Home Decor & Gifting",
-                    "Customizable with Your Photo",
-                    "Secure Packaging for Safe Delivery",
-                    "Eco-Friendly Printing Process",
-                    "Crafted with Precision & Love",
-                    "Easy to Hang or Display",
-                    "Multiple Sizes & Thickness Options",
-                  ]
-              ).map((item, i) => (
+              {product.highlights?.map((item, i) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>
@@ -270,7 +269,7 @@ const AcrylicRoundOrderpage = () => {
               }
               className="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-lg w-full flex items-center justify-center gap-3 font-semibold transition duration-200 shadow"
             >
-              <FaPhoneAlt size={18} />
+              <FaWhatsapp size={18} />
               Chat on WhatsApp for Bulk Orders
             </button>
           </div>

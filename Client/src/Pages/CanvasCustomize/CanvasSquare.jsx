@@ -2,42 +2,52 @@ import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Upload, X, Image, Eye } from "lucide-react";
+import LoadingBar from "../../Components/LoadingBar";
+import { toast } from "react-toastify";
 
 const CanvasSquare = () => {
   const [photoData, setPhotoData] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleFileUpload = async (file) => {
     if (!file.type.match("image.*")) {
-      alert("Please select a valid image");
+      toast.error("Please select a valid image");
       return;
     }
-
+    setIsUploading(true);
+    setUploadProgress(0);
     const formData = new FormData();
     formData.append("image", file);
-
     try {
       const res = await axios.post(
-        "https://api.photoparkk.com/api/canvascustomize/upload",
+        "/api/canvascustomize/upload",
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          },
+        }
       );
-
       const imageUrl = res.data.imageUrl || res.data.uploadedImageUrl;
-
       setPhotoData({
         url: imageUrl,
         name: file.name,
         size: file.size,
         type: file.type,
       });
-
-      alert("Image upload successful!");
+      toast.success("Image uploaded successfully!");
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Image upload failed. Please try again.");
+      toast.error("Image upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -220,6 +230,7 @@ const CanvasSquare = () => {
           </div>
         </div>
       </div>
+      {isUploading && <LoadingBar progress={uploadProgress} />}
     </div>
   );
 };
