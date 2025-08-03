@@ -8,8 +8,11 @@ export const createOrder = async (req, res) => {
   try {
     const { amount, cartItemId, productType, deliveryDetails } = req.body;
     
-    // Generate a unique receipt ID using cart item ID and timestamp
-    const receipt = `receipt_${cartItemId}_${Date.now()}`;
+    // Generate a unique receipt ID (max 40 chars for Razorpay)
+    // Use a shorter timestamp and truncate cartItemId if needed
+    const shortTimestamp = Date.now().toString().slice(-8); // Last 8 digits
+    const shortCartId = cartItemId.toString().slice(0, 20); // Max 20 chars
+    const receipt = `rcpt_${shortCartId}_${shortTimestamp}`;
 
     const options = {
       amount: amount * 100, // ₹ to paisa
