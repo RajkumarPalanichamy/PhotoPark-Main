@@ -6,16 +6,34 @@ import Order from "../models/orders.js";
 
 export const createOrder = async (req, res) => {
   try {
-    const { amount, currency, receipt } = req.body;
+    const { amount, cartItemId, productType, deliveryDetails } = req.body;
+    
+    // Generate a unique receipt ID using cart item ID and timestamp
+    const receipt = `receipt_${cartItemId}_${Date.now()}`;
 
     const options = {
       amount: amount * 100, // ₹ to paisa
-      currency,
+      currency: 'INR',
       receipt,
     };
 
     const order = await razorpay.orders.create(options);
-    res.status(200).json({ orderId: order.id, currency: order.currency, amount: order.amount });
+    
+    // Return order data with additional info needed for payment processing
+    res.status(200).json({ 
+      orderId: order.id, 
+      currency: order.currency, 
+      amount: order.amount,
+      orderPayload: {
+        userId: req.user._id,
+        cartItemId,
+        productType,
+        deliveryDetails,
+        razorpayOrderId: order.id,
+        amount: amount,
+        status: 'pending'
+      }
+    });
   } catch (error) {
     console.error("❌ Razorpay order creation failed:", error);
     res.status(500).json({ error: "Failed to create Razorpay order" });
