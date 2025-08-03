@@ -32,6 +32,12 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
+// 🐛 DEBUG: Log all incoming requests (add this for debugging)
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Headers: ${JSON.stringify(req.headers)}`);
+  next();
+});
+
 // ✅ Serve static files
 app.use("/newarrivalsUploads", express.static(path.join(__dirname, "newarrivalsUploads")));
 app.use("/addtocartUploads", express.static(path.join(__dirname, "addtocartUploads")));
