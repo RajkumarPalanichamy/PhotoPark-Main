@@ -19,7 +19,7 @@ const loadRazorpayScript = () => {
 // Create payment order (calls backend API to get Razorpay orderId)
 export const createPaymentOrder = async (paymentData) => {
   try {
-    const response = await axiosInstance.post('/payments/create-order', paymentData);
+    const response = await axiosInstance.post('/payments/create', paymentData);
     return response.data; // should return { orderId, amount, dbOrderId, etc. }
   } catch (error) {
     console.error('❌ Error creating payment order:', error);
