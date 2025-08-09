@@ -207,7 +207,7 @@ const AcrylicPortrait = () => {
                         Browse Image
                       </button>
                       <p className="text-sm text-gray-500">
-                        PNG, JPG, GIF up to 5MB
+                        PNG, JPG, GIF up to 10MB
                       </p>
                     </>
                   )}

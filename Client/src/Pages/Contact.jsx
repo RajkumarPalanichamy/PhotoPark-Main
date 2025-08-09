@@ -47,7 +47,7 @@ const Contact = () => {
       {/* Header Section */}
       <div style={backgroundStyle} className="flex items-center justify-center">
         <h1 className="text-white text-3xl md:text-5xl font-bold text-center bg-black/40 px-4 py-6 rounded-xl">
-          Contact to PhotoPark
+          Contact to PhotoParkk
         </h1>
       </div>
 
